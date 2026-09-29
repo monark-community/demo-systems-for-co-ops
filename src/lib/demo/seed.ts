@@ -334,7 +334,7 @@ export function createSeed(copy: SeedCopy, locale: "en" | "fr"): DemoState {
     hash: seededHash(`ledger:${id}`),
   })
   const surplus = (id: string, d: number, amount: number) =>
-    entry(id, d, "in", amount, copy.ledger.surplus.replace("{month}", monthName(d + 3)), C.counter)
+    entry(id, d, "in", amount, copy.ledger.surplus.replace("{month}", monthName(d + 10)), C.counter)
 
   const ledger: LedgerEntry[] = [
     entry("l-01", 392, "in", 50000, copy.ledger.sharesAutumn, C.members),
