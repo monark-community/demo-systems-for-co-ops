@@ -1,6 +1,6 @@
 # CoopDAO by Monark: site plan
 
-Status: plan for the rebuild on `develop`. Kept in sync with what ships.
+Status: shipped on `develop`. This plan describes what the site does; it is kept in sync with the code (see §12 for decisions taken while building).
 
 - Product: **CoopDAO**, Monark's co-op operating system: wallet-based membership, proposals and votes, and a shared treasury run by the rules the members wrote.
 - Authoritative description: https://www.monark.io/en/project/systems-for-co-ops
@@ -88,11 +88,11 @@ All routes live under `/{locale}` (`en`, `fr`); `/` redirects to the preferred l
 | `/{locale}/pricing` | Internal strategy review only. Never linked, not in the sitemap, `noindex, nofollow`. | |
 | 404 | Localized not-found with the vertical Monark logo. | |
 
-**Header:** "CoopDAO by Monark" pairing · links: Overview, How it works, Demo co-op · EN/FR · theme toggle · "Open the demo co-op" pill (inside the app: the `connect-wallet` control; the app header also shows the "Demo · simulated data" badge). Mobile: pairing + menu sheet.
+**Header** (standard Monark navbar, guidelines §2 and §10): butterfly mark + "CoopDAO" on one line (no "by Monark"), then left-aligned links Overview, How it works, Demo co-op · right: Demo chip, EN/FR switch, theme toggle, "Open the demo co-op" (inside the app: the `connect-wallet` control, labelled "Connect wallet"). Below `lg`: brand + menu button; the sheet holds the links, Demo chip, EN/FR, theme and the action.
 
 **App sub-navigation** (pill tabs under the header, scrollable on phones): Overview · Proposals · Treasury · Members · Charter, plus "Demo controls" (network speed, fail next transaction, Reset demo).
 
-**Footer:** standard three bands: product line + links (Overview, How it works, Demo co-op, Credits) · Monark logo + tagline, project page on monark.io, GitHub repo, socials · "© {year} Monark · Open source", "Demo · simulated data", testnet notice, photo credits link.
+**Footer:** standard three bands: product line + links (Overview, How it works, Demo co-op, Credits) · "CoopDAO is built by Monark", Monark logo + tagline, project page on monark.io, GitHub repo, socials · "© {year} Monark · Open source", "Demo · simulated data", testnet notice, photo credits link.
 
 ## 5. Feature highlights
 
@@ -107,7 +107,7 @@ All routes live under `/{locale}` (`en`, `fr`); `/` redirects to the preferred l
 
 ## 6. Key flows
 
-The demo simulates a wallet (Camille Roy, `0x5c1e…`), a testnet (Sepolia) and a block time of 1.2–2.4 s (3–6 s with "Slow network"). "Fail the next transaction" in Demo controls forces a revert. Closing the wallet prompt counts as a rejection.
+The demo simulates a wallet (Camille Roy, 250 tUSDC), a testnet (Sepolia) and a block time of 1.2–2.4 s (3–6 s with "Slow network"). "Fail the next transaction" in Demo controls forces a revert. Closing the wallet prompt counts as a rejection.
 
 1. **Join the co-op.** Open the demo → "Connect demo wallet" → wallet prompt (sign-in message, no fee) → connected as a visitor → Members → "Apply to join" → name, a line about why, member share 20 tUSDC shown → "Pay share and apply" → wallet prompt (moves 20 tUSDC) → *pending* (hash) → *confirmed*: application listed "Waiting for the committee · 0 of 2 signatures" → signatures from two stewards arrive a couple of seconds apart (seals stamp in) → "Welcome, you're member #35". *Failed:* wallet rejected ("You declined the request. Nothing was sent.") or reverted ("The transaction failed on the network. Your 20 tUSDC were not taken.") with Try again.
 2. **Vote on a proposal.** Proposals → "Second-hand walk-in fridge" (member vote, open, quorum not yet reached) → choose For / Against / Abstain → "Cast your vote" → prompt → *pending* → *confirmed*: your dot lights up in the grid, tally updates. Then "Fast-forward to the end of the vote" (demo) → remaining votes arrive one by one, tally settles, quorum marker is crossed → outcome *Passed* (or *Rejected*, or *Quorum not reached* for a different proposal). Non-members see "Join the co-op to vote". *Failed:* rejected or reverted, the vote isn't counted.
@@ -211,3 +211,17 @@ A `/pricing` page exists for internal strategy review only: "Free, part of Monar
 - Leaving the co-op and refunding the member share (explained on How it works, not simulated).
 - Several co-ops per visitor, co-op creation from scratch, notifications, email, off-chain discussion threads.
 - Multiple tokens: the treasury holds tUSDC only.
+
+## 12. Decisions taken while building (unattended)
+
+- **Positioning vs GovChain.** GovChain (dao-voting-platform) is the general voting module; CoopDAO is the organisation around it (membership, committee, charter, treasury) and deliberately limited to one member, one vote.
+- **One demo co-op, Le Grenier.** A student food co-op in Montréal fits Monark's audience (students, local communities) and the documentation's examples; names are bilingual-friendly and untranslated.
+- **Visitor starts as a non-member.** Joining is flow 1, so votes and proposals are gated on membership, as in a real co-op. The visitor becomes member #35 and is added to the electorate of votes still open.
+- **Simulated co-members.** Committee signatures arrive about 2 s apart (for your application, your committee proposals, and the seeded #16 when viewed). "Fast-forward to the end of the vote" plays the other members' votes one by one with a deterministic per-proposal lean and turnout, so #18 passes and #19 fails for lack of quorum, which shows both outcomes.
+- **Execution is open to any member** once approved: the rules already decided, so no one person gatekeeps the payment.
+- **"Available" treasury** = balance minus approved-but-unpaid spends; the composer refuses amounts above it.
+- **Charter changes** apply to later proposals; ranges are bounded (committee limit 50–5,000 tUSDC, quorum 10–90%, voting 2–14 days, share 5–200 tUSDC). Committee size/threshold, supermajority and one-member-one-vote are shown as fixed.
+- **Quorum marker labelling.** The marker in the member grid is explained in the grid legend rather than with a floating label (the label collided with wrapped rows).
+- **Phones.** On proposal pages the vote/payment panel comes right after the vote grid; in the composer a compact live route line sits under the amount (the full diagram is below the form).
+- **Toasts** sit top-right under the app sub-navigation on desktop (offset 176 px), clear of the proposal and composer content; on phones they sit under the site header over the app strip, never over the flow content.
+- **Photos**: three free Unsplash images (people deciding and working together, warm light), credited on `/credits`; everything else is product UI and line art drawn in code.
