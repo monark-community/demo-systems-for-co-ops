@@ -25,7 +25,9 @@ const en = {
   common: {
     product: "CoopDAO",
     byMonark: "by Monark",
-    homeLabel: "CoopDAO by Monark, home",
+    homeLabel: "CoopDAO, by Monark: home",
+    demoChip: "Demo",
+    connectShort: "Connect wallet",
     skip: "Skip to content",
     nav: { overview: "Overview", how: "How it works", demo: "Demo co-op", credits: "Credits", label: "Main" },
     launchDemo: "Open the demo co-op",
@@ -39,6 +41,7 @@ const en = {
     footer: {
       product: "CoopDAO runs a co-op's membership, decisions and shared treasury by the charter its members wrote.",
       productNav: "CoopDAO",
+      builtBy: "CoopDAO is built by Monark",
       tagline: "Fostering Collaboration within the Web3 Community",
       monarkHome: "Monark home page",
       projectPage: "Project page on monark.io",
@@ -404,6 +407,7 @@ const en = {
         label: "Vote grid: {cast} of {electorate} members voted, quorum is {needed}",
         quorum: "Quorum {needed}",
         quorumReached: "Quorum reached",
+        none: "Not yet voted",
         quorumMissing: "{n} more to reach quorum",
         majority: "Majority",
         twoThirds: "Two-thirds needed",

@@ -26,7 +26,9 @@ const fr: Dictionary = {
   common: {
     product: "CoopDAO",
     byMonark: "par Monark",
-    homeLabel: "CoopDAO par Monark, accueil",
+    homeLabel: "CoopDAO, par Monark : accueil",
+    demoChip: "Démo",
+    connectShort: "Connecter",
     skip: "Aller au contenu",
     nav: { overview: "Aperçu", how: "Fonctionnement", demo: "Coop de démo", credits: "Crédits", label: "Principal" },
     launchDemo: "Ouvrir la coop de démo",
@@ -40,6 +42,7 @@ const fr: Dictionary = {
     footer: {
       product: "CoopDAO gère les membres, les décisions et la caisse commune d'une coop selon la charte que ses membres ont écrite.",
       productNav: "CoopDAO",
+      builtBy: "CoopDAO est conçu par Monark",
       tagline: "Favoriser la collaboration au sein de la communauté Web3",
       monarkHome: "Page d'accueil de Monark",
       projectPage: "Page du projet sur monark.io",
@@ -382,7 +385,7 @@ const fr: Dictionary = {
       closes: "Se termine {when}",
       closed: "Terminée le {date}",
       votes: "{cast} votants sur {electorate}",
-      signatures: "{n} signatures sur {m}",
+      signatures: "Signatures : {n} sur {m}",
     },
     proposal: {
       back: "Toutes les propositions",
@@ -405,6 +408,7 @@ const fr: Dictionary = {
         label: "Grille de vote : {cast} membres sur {electorate} ont voté, le quorum est de {needed}",
         quorum: "Quorum {needed}",
         quorumReached: "Quorum atteint",
+        none: "Pas encore voté",
         quorumMissing: "Encore {n} pour le quorum",
         majority: "Majorité",
         twoThirds: "Deux tiers requis",
@@ -429,7 +433,7 @@ const fr: Dictionary = {
       },
       committee: {
         title: "Signatures du comité",
-        label: "{n} signatures sur {m}",
+        label: "Signatures : {n} sur {m}",
         waiting: "En attente de la signature d'un autre responsable…",
         done: "Approuvée par le comité",
         signed: "Signé",
@@ -538,7 +542,7 @@ const fr: Dictionary = {
       since: "Depuis le {date}",
       applications: "Demandes d'adhésion",
       noApplications: "Aucune demande en attente.",
-      waiting: "{n} signatures sur {m}",
+      waiting: "Signatures : {n} sur {m}",
       admitted: "Admis·e",
       join: {
         title: "Adhérer au Grenier",
