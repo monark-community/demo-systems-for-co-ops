@@ -10,7 +10,7 @@ export default async function AppLayout({ children, params }: LayoutProps<"/[loc
   if (!isLocale(locale)) notFound()
   const dict = getDictionary(locale)
   return (
-    <AppProvider value={{ locale, app: dict.app, seed: dict.seed, disclaimer: dict.common.disclaimer, demoBadge: dict.common.demoBadge }}>
+    <AppProvider value={{ locale, app: dict.app, seed: dict.seed, disclaimer: dict.common.disclaimer }}>
       <AppFrame>{children}</AppFrame>
     </AppProvider>
   )

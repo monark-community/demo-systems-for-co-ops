@@ -109,7 +109,7 @@ async function appFlows(page, v) {
   await shot(page, v, "flow1-join-failed")
   await join.getByRole("button", { name: "Try again" }).click()
   await confirmPrompt(page, v)
-  await page.getByText("Waiting for the network…").first().waitFor()
+  await page.getByText("Sending your application…").first().waitFor()
   await shot(page, v, "flow1-join-pending")
   await page.getByRole("heading", { name: "Your application is with the committee" }).waitFor({ timeout: 10000 })
   await join.getByText("1 of 2 signatures").first().waitFor({ timeout: 8000 })

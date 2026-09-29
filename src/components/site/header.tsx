@@ -9,7 +9,11 @@ import { MobileMenu } from "./mobile-menu"
 import { NavLinks } from "./nav-links"
 import { ThemeToggle } from "./theme"
 
-/** Standard Monark shell header (brand guidelines §10). */
+/**
+ * Standard Monark shell header (brand guidelines §10):
+ * [mark] {Product}  links…            (• Demo) (EN|FR) (☾) [Primary action]
+ * Below `lg`: the brand and a menu button only; everything else is in the sheet.
+ */
 export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const c = dict.common
   const items = [
@@ -19,7 +23,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
   ]
   const appHref = href(locale, "/app")
   const wallet: WalletLabels = {
-    connect: c.connectShort,
+    connect: dict.app.wallet.connect,
     connecting: dict.app.wallet.connecting,
     disconnect: dict.app.wallet.disconnect,
     signIn: dict.app.summaries.signIn,
@@ -29,23 +33,28 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
   const languageNames = { en: c.language.en, fr: c.language.fr }
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/85">
+    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6">
-        <Brand href={href(locale)} product={c.product} label={c.homeLabel} />
-        <nav aria-label={c.nav.label} className="ml-7 hidden lg:block">
-          <NavLinks items={items} className="flex items-center gap-5" />
+        <Brand href={href(locale)} name={c.product} label={c.homeLabel} />
+
+        {/* Links: 28px after the brand (20px margin + the link's own 8px padding). */}
+        <nav aria-label={c.nav.label} className="ml-5 hidden lg:block">
+          <NavLinks items={items} className="flex items-center gap-1.5" />
         </nav>
+
         <div className="ml-auto hidden items-center gap-2.5 lg:flex">
           <DemoChip label={c.demoChip} title={c.demoBadge} />
           <LocaleSwitch locale={locale} label={c.language.label} names={languageNames} short={c.language.short} />
           <ThemeToggle label={c.theme.toggle} />
           <HeaderAction appHref={appHref} launchLabel={c.launchDemo} wallet={wallet} />
         </div>
+
         <MobileMenu
           locale={locale}
           items={items}
           appHref={appHref}
-          wallet={{ ...wallet, connect: dict.app.wallet.connect }}
+          wallet={wallet}
+          className="ml-auto lg:hidden"
           labels={{
             open: c.menu,
             close: c.closeMenu,
@@ -56,8 +65,8 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
             language: c.language.label,
             names: languageNames,
             short: c.language.short,
-            demoChip: c.demoChip,
-            demoBadge: c.demoBadge,
+            demo: c.demoChip,
+            demoTitle: c.demoBadge,
           }}
         />
       </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { Loader2Icon, RotateCcwIcon, WalletIcon, XCircleIcon } from "lucide-react"
+import { RotateCcwIcon, WalletIcon, XCircleIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { TxStatus } from "@/components/ui/tx-status"
@@ -42,15 +42,8 @@ export function TxFeedback({
         </p>
       ) : null}
 
-      {state.phase === "pending" && state.hash ? (
-        <div className="flex flex-col gap-1.5">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold">
-            <Loader2Icon className="size-4 animate-spin text-primary" aria-hidden="true" />
-            {pendingLabel ?? tx.pending}
-          </p>
-          <TxStatus status="pending" hash={state.hash} label={tx.pending} />
-        </div>
-      ) : null}
+      {/* One line per phase: the pending chip carries the step's own label and the hash. */}
+      {state.phase === "pending" && state.hash ? <TxStatus status="pending" hash={state.hash} label={pendingLabel ?? tx.pending} /> : null}
 
       {state.phase === "confirmed" && state.hash ? (
         <TxStatus status="confirmed" hash={state.hash} label={confirmedLabel ?? tx.confirmed} />

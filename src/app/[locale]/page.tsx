@@ -46,8 +46,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:pt-20 lg:pb-24">
           <div>
-            <p className="eyebrow text-primary-ink">{h.eyebrow}</p>
-            <h1 id="hero-title" className="mt-4 text-[2.25rem] leading-[1.06] font-extrabold tracking-display sm:text-5xl lg:text-[4.1rem]">
+            <h1 id="hero-title" className="text-[2.25rem] leading-[1.06] font-extrabold tracking-display sm:text-5xl lg:text-[4.1rem]">
               {/* Keep "co-op" from breaking at its hyphen. */}
               {h.title.split(" ").map((word, i) => (
                 <span key={i}>
@@ -68,7 +67,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 <Link href={href(locale, "/how-it-works")}>{h.ctaSecondary}</Link>
               </Button>
             </div>
-            <p className="mt-6 text-xs text-muted-foreground">{dict.common.demoBadge}</p>
           </div>
           <div className="flex justify-center lg:justify-end">
             <HeroVoteCard copy={h.card} />
@@ -78,37 +76,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       <SectionDivider />
 
-      {/* Problem and benefits */}
-      <section aria-labelledby="problem-title" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:py-24">
-        <div>
-          <h2 id="problem-title" className="text-3xl font-bold tracking-display sm:text-[2.25rem]">
-            {h.problem.title}
-          </h2>
-          <p className="mt-4 max-w-[52ch] text-lg text-muted-foreground">{h.problem.body}</p>
-        </div>
-        <ol className="flex flex-col">
-          {h.problem.items.map((item, i) => (
-            <li key={item.title} className="flex gap-5 border-b py-6 first:pt-0 last:border-b-0">
-              <span className="font-mono text-sm font-bold text-primary-ink">0{i + 1}</span>
-              <div>
-                <h3 className="text-xl font-bold">{item.title}</h3>
-                <p className="mt-1.5 text-muted-foreground">{item.body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* Three routes */}
+      {/* Three routes, one charter */}
       <section aria-labelledby="routes-title" className="bg-secondary/60">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <div className="max-w-2xl">
-            <p className="eyebrow text-primary-ink">{h.routes.eyebrow}</p>
-            <h2 id="routes-title" className="mt-3 text-3xl font-bold tracking-display sm:text-[2.25rem]">
-              {h.routes.title}
-            </h2>
-            <p className="mt-3 text-lg text-muted-foreground">{h.routes.body}</p>
-          </div>
+          <h2 id="routes-title" className="max-w-2xl text-3xl font-bold tracking-display sm:text-[2.25rem]">
+            {h.routes.title}
+          </h2>
           <RouteDiagram
             active="vote"
             ariaLabel={h.routes.diagramLabel}
@@ -116,17 +89,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             labels={{ proposal: h.routes.proposal, charter: h.routes.charter, items: h.routes.items }}
             className="mt-10"
           />
-          <Link href={href(locale, "/how-it-works")} className="mt-8 inline-flex items-center gap-1.5 font-bold text-primary-ink underline underline-offset-4">
-            {h.routes.cta}
-            <ArrowRightIcon className="size-4" aria-hidden="true" />
-          </Link>
         </div>
       </section>
 
       {/* Who */}
       <section aria-labelledby="who-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-        <p className="eyebrow text-primary-ink">{h.who.eyebrow}</p>
-        <h2 id="who-title" className="mt-3 max-w-2xl text-3xl font-bold tracking-display sm:text-[2.25rem]">
+        <h2 id="who-title" className="max-w-2xl text-3xl font-bold tracking-display sm:text-[2.25rem]">
           {h.who.title}
         </h2>
         <ul className="mt-10 grid gap-5 md:grid-cols-3">
@@ -147,8 +115,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           ))}
         </ul>
       </section>
-
-      <SectionDivider />
 
       {/* FAQ */}
       <section aria-labelledby="faq-title" className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_2fr] lg:py-24">
@@ -171,12 +137,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* Closing */}
       <section aria-labelledby="closing-title" className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6">
         <div className="flex flex-col items-start gap-6 rounded-3xl border bg-card p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 id="closing-title" className="text-2xl font-bold tracking-display sm:text-3xl">
-              {h.closing.title}
-            </h2>
-            <p className="mt-2 text-muted-foreground">{h.closing.body}</p>
-          </div>
+          <h2 id="closing-title" className="text-2xl font-bold tracking-display sm:text-3xl">
+            {h.closing.title}
+          </h2>
           <Button asChild size="lg" className="shrink-0">
             <Link href={href(locale, "/app")}>
               {h.closing.cta}

@@ -1,6 +1,6 @@
 # CoopDAO by Monark: site plan
 
-Status: shipped on `develop`. This plan describes what the site does; it is kept in sync with the code (see §12 for decisions taken while building).
+Status: shipped on `develop`, then simplified (see `docs/simplification.md`: −43% visible words, one app bar, context on demand). This plan describes what the site does; it is kept in sync with the code (see §12 for decisions taken while building).
 
 - Product: **CoopDAO**, Monark's co-op operating system: wallet-based membership, proposals and votes, and a shared treasury run by the rules the members wrote.
 - Authoritative description: https://www.monark.io/en/project/systems-for-co-ops
@@ -63,8 +63,9 @@ Supporting benefits (outcomes):
 ## 3. Hero
 
 - **Headline (EN):** "Run your co-op in the open." (6 words) · **FR:** « Votre coop, gérée au grand jour. »
-- **Subheadline (EN):** "CoopDAO keeps your members, your shared money and your decisions on one public record, and follows the charter your members wrote: one member, one vote."
-- **FR:** « CoopDAO réunit vos membres, votre caisse commune et vos décisions dans un seul registre public, et applique la charte que vos membres ont écrite : un membre, une voix. »
+- **Subheadline (EN):** "Members, shared money and decisions on one public record. One member, one vote."
+- **FR:** « Membres, caisse commune et décisions dans un seul registre public. Un membre, une voix. »
+- No eyebrow, no demo line under the buttons (the header's Demo chip and the footer carry it).
 - **Primary CTA:** "Open the demo co-op" → `/{locale}/app` · FR « Ouvrir la coop de démo »
 - **Secondary CTA:** "How the charter works" → `/{locale}/how-it-works` · FR « Comment fonctionne la charte »
 - **Hero visual: product UI, animated once.** A live proposal card from the demo co-op ("Second-hand walk-in fridge · 1,480 tUSDC"): its route line lights up "Above 500 tUSDC → member vote", then a grid of 34 member dots fills as votes arrive, the tally crosses the quorum marker, and the card settles on "Passed · executed". It shows the product's idea (rules route the decision, one dot per member, money moves after) in five seconds, which no photo can. The mesh butterfly sits large and cropped behind it.
@@ -75,8 +76,8 @@ All routes live under `/{locale}` (`en`, `fr`); `/` redirects to the preferred l
 
 | Route | Purpose | Sections in order |
 |-|-|-|
-| `/{locale}` | Home: understand the product and enter the demo. | Hero (vote card) · Section divider · "A co-op already has rules" (the problem + 3 benefits) · "Three routes, one charter" (committee / member vote / supermajority, with the line-art router) · "Who runs on CoopDAO" (3 photo cards: student co-ops, local collectives, farmers and housing co-ops) · FAQ · Closing call to action |
-| `/{locale}/how-it-works` | For students, developers and careful stewards: the mechanics. **Justified**: the documentation positions CoopDAO as a learning project in DAO tooling; the audience needs the contract model spelled out. | Intro · The life of a proposal (diagram) · One member, one vote (and why participation never adds weight) · The committee's 2-of-3 signatures · Joining and leaving (member share) · Changing the charter · For developers (contract modules and how the demo's data layer mirrors them) · Call to action |
+| `/{locale}` | Home: understand the product and enter the demo. | Hero (vote card) · Section divider · "A co-op already has rules. Now they run themselves." (the line-art router: committee / member vote / charter change) · "For groups that own something together" (3 photo cards) · FAQ (4) · Closing call to action (heading + button) |
+| `/{locale}/how-it-works` | For students, developers and careful stewards: the mechanics. **Justified**: the documentation positions CoopDAO as a learning project in DAO tooling; the audience needs the contract model spelled out. | One-line intro · The life of a proposal (diagram) · One member, one vote · The committee's 2-of-3 signatures · Joining and leaving · Changing the charter (incl. what happens without quorum) · For developers (one line; contract modules behind "Show the contract modules") · Call to action (heading + button). One or two short lines per section. |
 | `/{locale}/app` | Demo: co-op overview. Wallet gate, your membership status, treasury balance, open proposals, charter summary, recent activity. | |
 | `/{locale}/app/proposals` | All proposals with status filters (open, awaiting committee, passed, executed, rejected). | |
 | `/{locale}/app/proposals/new` | Proposal composer with the live route preview. | |
@@ -88,11 +89,11 @@ All routes live under `/{locale}` (`en`, `fr`); `/` redirects to the preferred l
 | `/{locale}/pricing` | Internal strategy review only. Never linked, not in the sitemap, `noindex, nofollow`. | |
 | 404 | Localized not-found with the vertical Monark logo. | |
 
-**Header** (standard Monark navbar, guidelines §2 and §10): butterfly mark + "CoopDAO" on one line (no "by Monark"), then left-aligned links Overview, How it works, Demo co-op · right: Demo chip, EN/FR switch, theme toggle, "Open the demo co-op" (inside the app: the `connect-wallet` control, labelled "Connect wallet"). Below `lg`: brand + menu button; the sheet holds the links, Demo chip, EN/FR, theme and the action.
+**Header** (standard Monark navbar, guidelines §2 and §10): butterfly mark + "CoopDAO" on one line (no "by Monark"), then left-aligned links Overview, How it works, Demo co-op · right: Demo chip (primary 8% light / 15% dark), EN/FR switch, theme toggle, "Open the demo co-op" (inside the app: the `connect-wallet` control, labelled "Connect demo wallet"). Shell components mirror Splitflow's `src/components/site/`. Below `lg`: brand + menu button; the sheet holds the links, Demo chip, EN/FR, theme and the action.
 
-**App sub-navigation** (pill tabs under the header, scrollable on phones): Overview · Proposals · Treasury · Members · Charter, plus "Demo controls" (network speed, fail next transaction, Reset demo).
+**App bar** (one compact bar under the header, `/app` only): pill nav Overview · Proposals · Treasury · Members · Charter on the left; on the right one pill "● Sepolia testnet | Demo controls" that opens the controls (network speed, fail next transaction, Reset demo). On phones the pill is icon-only and Overview is a house icon, so all five sections fit in EN and FR. No testnet strip; the membership chip sits under the overview title.
 
-**Footer:** standard three bands: product line + links (Overview, How it works, Demo co-op, Credits) · "CoopDAO is built by Monark", Monark logo + tagline, project page on monark.io, GitHub repo, socials · "© {year} Monark · Open source", "Demo · simulated data", testnet notice, photo credits link.
+**Footer:** standard three bands: product line ("One member, one vote, and a treasury that follows your charter.") + links (Overview, How it works, Demo co-op, Credits) · "CoopDAO is built by Monark", Monark logo + tagline, project page on monark.io, GitHub repo, socials · "© {year} Monark · Open source", "Demo · simulated data", photo credits link (no testnet line).
 
 ## 5. Feature highlights
 
@@ -123,54 +124,50 @@ Tone: Monark voice. Open, practical, community-first, no hype. Web3 terms explai
 
 | | EN | FR |
 |-|-|-|
-| Eyebrow | Co-op module · Monark | Module coop · Monark |
 | H1 | Run your co-op in the open. | Votre coop, gérée au grand jour. |
 | Sub | (see §3) | (see §3) |
 | CTAs | Open the demo co-op · How the charter works | Ouvrir la coop de démo · Comment fonctionne la charte |
 | Hero card states | Member vote · Quorum reached · Passed · Paid from the treasury | Vote des membres · Quorum atteint · Adoptée · Payée par la caisse |
-| Problem H2 | A co-op already has rules. Now they run themselves. | Une coop a déjà ses règles. Maintenant, elles s'appliquent toutes seules. |
-| Problem body | Most co-ops write a fair charter, then run on one treasurer's bank card and a shared spreadsheet. CoopDAO turns the charter into the thing that actually moves the money. | La plupart des coops rédigent une charte équitable, puis fonctionnent avec la carte bancaire du trésorier et un tableur partagé. CoopDAO fait de la charte ce qui fait réellement bouger l'argent. |
-| Benefit 1 | Everyone knows how a decision gets made. The charter is written in plain words, and every proposal shows its route before anyone votes. | Chacun sait comment une décision se prend. La charte est écrite en mots simples, et chaque proposition affiche son parcours avant le vote. |
-| Benefit 2 | The money follows the vote, and only the vote. A payment leaves the treasury only once it's approved, and anyone can trace it back. | L'argent suit le vote, et rien d'autre. Un paiement ne sort de la caisse qu'une fois approuvé, et tout le monde peut en retrouver l'origine. |
-| Benefit 3 | Small things stay quick. Everyday expenses need two stewards' signatures, not a general assembly. | Les petites choses restent simples. Une dépense courante demande deux signatures du comité, pas une assemblée générale. |
-| Routes H2 | Three routes, one charter | Trois parcours, une seule charte |
-| Routes body | Every proposal goes down the path your charter sets for it. | Chaque proposition suit le parcours que votre charte lui réserve. |
-| Route 1 | Committee approval — up to 500 tUSDC. Two of the three elected stewards sign. Done in a day. | Accord du comité — jusqu'à 500 tUSDC. Deux des trois responsables élus signent. Réglé dans la journée. |
-| Route 2 | Member vote — above 500 tUSDC. Five days, 40% quorum, simple majority. One member, one vote. | Vote des membres — au-delà de 500 tUSDC. Cinq jours, quorum de 40 %, majorité simple. Un membre, une voix. |
-| Route 3 | Charter change — any rule. Two-thirds of the votes, with half the members taking part. | Modification de la charte — toute règle. Deux tiers des voix, avec la participation de la moitié des membres. |
-| Who H2 | Built for groups that own something together | Pour les groupes qui possèdent quelque chose ensemble |
-| Card 1 | Student co-ops — A campus grocery, a bike workshop, a café run by the students who use it. | Coops étudiantes — Une épicerie de campus, un atelier vélo, un café gérés par les étudiants qui les fréquentent. |
-| Card 2 | Local collectives — Neighbours pooling money for a shared garden, tools or a mutual-aid fund. | Collectifs de quartier — Des voisins qui mettent en commun pour un jardin, des outils ou un fonds d'entraide. |
-| Card 3 | Farmers' and housing co-ops — Boards that want every member to see where the money goes. | Coops agricoles et d'habitation — Des conseils qui veulent que chaque membre voie où va l'argent. |
-| Closing | Walk through a real co-op's week. Join Le Grenier, vote on a fridge, and watch the treasury pay for it. / Open the demo co-op | Vivez une semaine dans une vraie coop. Rejoignez Le Grenier, votez pour un frigo et regardez la caisse le payer. / Ouvrir la coop de démo |
+| Routes H2 | A co-op already has rules. Now they run themselves. | Une coop a déjà ses règles. Maintenant, elles s'appliquent seules. |
+| Route 1 | Committee approval · Up to 500 tUSDC · Two of three elected stewards sign. | Accord du comité · Jusqu'à 500 tUSDC · Deux des trois responsables élus signent. |
+| Route 2 | Member vote · Above 500 tUSDC · Five days, 40% quorum, one member, one vote. | Vote des membres · Au-delà de 500 tUSDC · Cinq jours, quorum de 40 %, un membre, une voix. |
+| Route 3 | Charter change · Any rule · Two-thirds of the votes, half the members taking part. | Modification de la charte · Toute règle · Deux tiers des voix, la moitié des membres votants. |
+| Who H2 | For groups that own something together | Pour les groupes qui possèdent quelque chose ensemble |
+| Card 1 | Student co-ops — A campus grocery, a bike workshop, a student café. | Coops étudiantes — Une épicerie de campus, un atelier vélo, un café étudiant. |
+| Card 2 | Local collectives — Neighbours pooling money for a garden or mutual aid. | Collectifs de quartier — Des voisins qui cotisent pour un jardin ou l'entraide. |
+| Card 3 | Farmers' and housing co-ops — Boards that want every member to see the money. | Coops agricoles et d'habitation — Des conseils qui veulent que chaque membre voie l'argent. |
+| Closing | Spend a week in a real co-op. / Open the demo co-op | Vivez une semaine dans une vraie coop. / Ouvrir la coop de démo |
 
 ### FAQ
 
-1. **Is this real money? / Est-ce du vrai argent ?** No. It's a testnet demo: the wallet, the tokens (tUSDC) and the transactions are simulated in your browser. Nothing leaves your device. / Non. C'est une démo sur réseau de test : le portefeuille, les jetons (tUSDC) et les transactions sont simulés dans votre navigateur. Rien ne quitte votre appareil.
-2. **Why one member, one vote, and not one token, one vote? / Pourquoi un membre, une voix, et pas un jeton, une voix ?** That's the co-op principle: members are equals, whatever they put in. Your member share buys your membership, never extra weight. / C'est le principe coopératif : les membres sont égaux, quel que soit leur apport. Votre part sociale achète votre adhésion, jamais un poids supplémentaire.
-3. **What's a multi-signature? / Qu'est-ce qu'une multisignature ?** A shared wallet that needs several people to sign before money moves. In CoopDAO, any two of the three stewards. / Un portefeuille partagé qui exige plusieurs signatures avant que l'argent bouge. Dans CoopDAO, deux des trois responsables, peu importe lesquels.
-4. **What if not enough members vote? / Et si trop peu de membres votent ?** The proposal fails with "quorum not reached" and nothing is paid. The author can bring it back later. / La proposition échoue avec « quorum non atteint » et rien n'est payé. Son auteur peut la représenter plus tard.
-5. **Can we change the rules? / Peut-on changer les règles ?** Yes, by proposal: any rule, with two-thirds of the votes and half the members taking part. The charter keeps its history. / Oui, par proposition : n'importe quelle règle, avec les deux tiers des voix et la participation de la moitié des membres. La charte garde son historique.
-6. **Do I need to understand blockchains? / Faut-il comprendre les chaînes de blocs ?** No. You'll see plain words: members, proposals, votes, payments. The on-chain details are there for those who want to check. / Non. Vous verrez des mots simples : membres, propositions, votes, paiements. Les détails on-chain restent accessibles à qui veut vérifier.
+The only FAQ on the site (4 questions). Mechanics (multi-signature, quorum) live on `/how-it-works`.
+
+1. **Is this real money? / Est-ce du vrai argent ?** No. The wallet, the test tokens (tUSDC) and every transaction are simulated in your browser. / Non. Le portefeuille, les jetons de test (tUSDC) et chaque transaction sont simulés dans votre navigateur.
+2. **Why one member, one vote? / Pourquoi un membre, une voix ?** It's the co-op principle: your member share buys membership, never extra weight. / C'est le principe coopératif : votre part sociale achète l'adhésion, jamais plus de poids.
+3. **Can we change the rules? / Peut-on changer les règles ?** Yes, by proposal: two-thirds of the votes, with half the members taking part. / Oui, par proposition : deux tiers des voix, avec la participation de la moitié des membres.
+4. **Do I need to understand blockchains? / Faut-il comprendre les chaînes de blocs ?** No. You'll see members, proposals, votes and payments; the on-chain details stay one click away. / Non. Vous verrez des membres, des propositions, des votes et des paiements ; le détail on-chain reste à portée de clic.
 
 ### Empty, loading and error states
 
 | State | EN | FR |
 |-|-|-|
-| Wallet gate | Connect a demo wallet to open Le Grenier. It's simulated: no extension, no real funds. | Connectez un portefeuille de démo pour ouvrir Le Grenier. Tout est simulé : aucune extension, aucun vrai fonds. |
+| Wallet gate | A simulated wallet opens it. No real funds. | Un portefeuille simulé l'ouvre. Aucun vrai fonds. |
 | Connect rejected | You declined the sign-in request. Nothing was shared. | Vous avez refusé la demande de connexion. Rien n'a été partagé. |
-| Not a member | You're visiting. Join the co-op to vote and make proposals. | Vous êtes en visite. Rejoignez la coop pour voter et faire des propositions. |
+| Not a member | "Visiting" chip under the overview title + "Join the co-op" button; on a vote: "Joining takes a 20 tUSDC member share." | Pastille « En visite » + bouton « Adhérer à la coop » ; sur un vote : « L'adhésion demande une part sociale de 20 tUSDC. » |
 | No proposals in filter | No proposals here yet. | Aucune proposition ici pour l'instant. |
 | Empty ledger filter | No payments match this filter. | Aucun mouvement ne correspond à ce filtre. |
-| Proposal not found | This proposal doesn't exist in this demo co-op. It may have been cleared by "Reset demo". | Cette proposition n'existe pas dans la coop de démo. Elle a peut-être été effacée par « Réinitialiser la démo ». |
+| Proposal not found | Proposal not found / It may have been cleared by "Reset demo". + All proposals | Proposition introuvable / « Réinitialiser la démo » l'a peut-être effacée. + Toutes les propositions |
 | Tx rejected | You declined the request. Nothing was sent. | Vous avez refusé la demande. Rien n'a été envoyé. |
 | Tx reverted | The transaction failed on the network. Nothing changed. | La transaction a échoué sur le réseau. Rien n'a changé. |
 | Over treasury | That's more than the treasury has available ({amount}). | C'est plus que ce que la caisse a de disponible ({amount}). |
-| Storage off | Your browser blocks local storage, so the demo will reset when you leave. | Votre navigateur bloque le stockage local : la démo repartira de zéro à votre départ. |
-| 404 | This page wandered off. / Back to the home page · Open the demo co-op | Cette page s'est égarée. / Retour à l'accueil · Ouvrir la coop de démo |
+| Storage off | Your browser blocks local storage, so the demo resets when you leave. | Votre navigateur bloque le stockage local : la démo repartira de zéro à votre départ. |
+| Invalid address | Not a wallet address (0x + 40 characters). | Adresse de portefeuille invalide (0x + 40 caractères). |
+| 404 | This page wandered off. / The link may be old or mistyped. / Back to the home page · Open the demo co-op | Cette page s'est égarée. / Le lien est peut-être ancien ou mal tapé. / Retour à l'accueil · Ouvrir la coop de démo |
 | Error | Something went wrong on our side. / Try again | Un problème est survenu de notre côté. / Réessayer |
 
-Disclaimers: "Demo · simulated data" / « Démo · données simulées » (footer + app header badge); "Testnet demo · not financial advice · no real funds" / « Démo sur réseau de test · pas un conseil financier · aucun vrai fonds » beside every action that moves value (member share, execute payment, wallet prompts that move value).
+Disclaimers: "Demo · simulated data" / « Démo · données simulées » (footer + header Demo chip); "Testnet demo · not financial advice · no real funds" / « Démo sur réseau de test · pas un conseil financier · aucun vrai fonds » once per transaction, only in the wallet prompt of value-moving transactions (member share, execute payment). Non-value prompts say "Simulated wallet: nothing is signed with a real key."
+
+**Context on demand (app).** No page intros. Info popovers (`src/components/ui/info-tip.tsx`) carry: why a proposal took its route, who can trigger a payment, what "Available" means, what the treasury is. Long lists are paged: proposals by 6, members by 9 (search shows all), ledger by 8 (CSV has all). Hashes sit in tooltips in the activity feed and charter history; the ledger keeps a hash column on desktop.
 
 ## 8. Aesthetics (Monark-branded)
 
@@ -223,5 +220,5 @@ A `/pricing` page exists for internal strategy review only: "Free, part of Monar
 - **Charter changes** apply to later proposals; ranges are bounded (committee limit 50–5,000 tUSDC, quorum 10–90%, voting 2–14 days, share 5–200 tUSDC). Committee size/threshold, supermajority and one-member-one-vote are shown as fixed.
 - **Quorum marker labelling.** The marker in the member grid is explained in the grid legend rather than with a floating label (the label collided with wrapped rows).
 - **Phones.** On proposal pages the vote/payment panel comes right after the vote grid; in the composer a compact live route line sits under the amount (the full diagram is below the form).
-- **Toasts** sit top-right under the app sub-navigation on desktop (offset 176 px), clear of the proposal and composer content; on phones they sit under the site header over the app strip, never over the flow content.
+- **Toasts** sit top-right under the app bar on desktop (offset 176 px), clear of the proposal and composer content; on phones they sit under the site header, never over the flow content. After the simplification pass only three remain: "The demo co-op was reset.", "Ledger exported as CSV." and the welcome toast (only when you're not on the members page, which shows the welcome itself). Votes, fast-forward, payments, applications and new proposals confirm in place.
 - **Photos**: three free Unsplash images (people deciding and working together, warm light), credited on `/credits`; everything else is product UI and line art drawn in code.

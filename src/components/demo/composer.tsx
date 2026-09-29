@@ -4,7 +4,6 @@ import { ArrowLeftIcon, Loader2Icon, SparklesIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useId, useState, type ReactNode } from "react"
-import { toast } from "sonner"
 
 import { RouteDiagram } from "@/components/diagrams/route-diagram"
 import { Button } from "@/components/ui/button"
@@ -15,7 +14,7 @@ import { useTx } from "@/lib/demo/chain"
 import { isAddress, seededAddress } from "@/lib/demo/ids"
 import { createProposal, type ProposalDraft } from "@/lib/demo/ops"
 import { available, routeFor } from "@/lib/demo/rules"
-import { getDemo, useDemo } from "@/lib/demo/store"
+import { useDemo } from "@/lib/demo/store"
 import type { Category, CharterKey } from "@/lib/demo/types"
 import { formatToken, parseAmount } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -155,11 +154,9 @@ export function Composer() {
           createdId = createProposal(draft, hash)
         }
       )
+      // No toast: the new proposal's own page is the confirmation.
       .then((ok2) => {
-        if (!ok2 || !createdId) return
-        const n = getDemo()?.proposals.find((p) => p.id === createdId)?.number ?? ""
-        toast.success(t(app.toasts.proposed, { n }))
-        router.push(href(locale, `/app/proposals/${createdId}`))
+        if (ok2 && createdId) router.push(href(locale, `/app/proposals/${createdId}`))
       })
   }
 
@@ -194,10 +191,7 @@ export function Composer() {
         <ArrowLeftIcon className="size-4" aria-hidden="true" />
         {app.proposal.back}
       </Link>
-      <header>
-        <h1 className="text-4xl font-extrabold tracking-display">{C.title}</h1>
-        <p className="mt-2 text-muted-foreground">{C.sub}</p>
-      </header>
+      <h1 className="text-4xl font-extrabold tracking-display">{C.title}</h1>
 
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
         <form
@@ -345,12 +339,12 @@ export function Composer() {
           <h2 id={`${uid}-preview`} className="eyebrow text-muted-foreground">
             {C.preview}
           </h2>
-          <p aria-live="polite" className="min-h-12 text-sm">
+          {/* The highlighted route below says it; the live text is for screen readers (and the empty hint). */}
+          <p aria-live="polite" className="text-sm">
             {route ? (
-              <>
-                <span className="font-bold">{app.routes[route]}</span>
-                <span className="block text-muted-foreground">{routeRule(route, demo.charter, app, locale)}</span>
-              </>
+              <span className="sr-only">
+                {app.routes[route]} · {routeRule(route, demo.charter, app, locale)}
+              </span>
             ) : (
               <span className="text-muted-foreground">{C.previewEmpty}</span>
             )}

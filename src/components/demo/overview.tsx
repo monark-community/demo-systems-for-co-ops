@@ -4,6 +4,7 @@ import { ArrowRightIcon, PlusIcon, UserPlusIcon } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { available, isExecutable, isOpen, treasuryBalance } from "@/lib/demo/rules"
@@ -12,7 +13,7 @@ import { formatAmount, formatDate, formatPercent, formatToken } from "@/lib/form
 
 import { ActivityFeed } from "./activity-feed"
 import { useAppCopy } from "./app-provider"
-import { membershipOf } from "./membership"
+import { MembershipChip, membershipOf } from "./membership"
 import { ProposalCard } from "./proposal-card"
 
 export function Overview() {
@@ -27,9 +28,9 @@ export function Overview() {
   const c = demo.charter
   const rules = app.charter.rules
 
-  const stats = [
+  const stats: { label: string; value: string; unit?: string; hint?: string; info?: string }[] = [
     { label: o.balance, value: formatAmount(treasuryBalance(demo), locale), unit: "tUSDC" },
-    { label: o.available, value: formatAmount(available(demo), locale), unit: "tUSDC", hint: o.availableHint },
+    { label: o.available, value: formatAmount(available(demo), locale), unit: "tUSDC", info: o.availableHint },
     { label: o.members, value: String(demo.members.length) },
     { label: o.openVotes, value: String(votes.length), hint: status === "member" ? `${o.needsYou}: ${waitingForYou}` : undefined },
   ]
@@ -38,9 +39,11 @@ export function Overview() {
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <p className="eyebrow text-primary-ink">{o.eyebrow}</p>
-          <h1 className="mt-2 text-4xl font-extrabold tracking-display">{o.title}</h1>
-          <p className="mt-2 text-muted-foreground">{o.sub}</p>
+          <h1 className="text-4xl font-extrabold tracking-display">{o.title}</h1>
+          <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-muted-foreground">
+            {o.sub}
+            <MembershipChip />
+          </p>
         </div>
         {status === "member" ? (
           <Button asChild size="lg" className="shrink-0">
@@ -59,16 +62,17 @@ export function Overview() {
         ) : null}
       </header>
 
-      {status !== "member" ? (
-        <p className="rounded-2xl border border-dashed px-4 py-3 text-sm">
-          {status === "visitor" ? app.membership.visitorBody : app.proposal.vote.applying}
-        </p>
-      ) : null}
-
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-2xl border bg-card p-4">
-            <dt className="text-xs font-semibold text-muted-foreground">{s.label}</dt>
+            <dt className="flex h-5 items-center gap-0.5 text-xs font-semibold text-muted-foreground">
+              {s.label}
+              {s.info ? (
+                <InfoTip label={`${app.info}: ${s.label}`} className="-my-1.5 size-8">
+                  {s.info}
+                </InfoTip>
+              ) : null}
+            </dt>
             <dd className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
               <span className="font-mono text-xl font-bold tabular-nums tracking-tight sm:text-2xl">{s.value}</span>
               {s.unit ? <span className="text-xs text-muted-foreground">{s.unit}</span> : null}
@@ -144,7 +148,7 @@ export function Overview() {
               {o.activityTitle}
             </h2>
             <div className="mt-2">
-              <ActivityFeed demo={demo} limit={7} />
+              <ActivityFeed demo={demo} limit={5} />
             </div>
           </section>
         </div>

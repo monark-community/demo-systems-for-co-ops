@@ -13,17 +13,20 @@ import { LocaleSwitch } from "./locale-switch"
 import { NavLinks, type NavItem } from "./nav-links"
 import { ThemeToggle } from "./theme"
 
+/** The header below `lg`: a menu button opening a full-height sheet with everything the desktop header shows. */
 export function MobileMenu({
   locale,
   items,
   labels,
   appHref,
   wallet,
+  className,
 }: {
   locale: Locale
   items: NavItem[]
   appHref: string
   wallet: WalletLabels
+  className?: string
   labels: {
     open: string
     close: string
@@ -34,15 +37,15 @@ export function MobileMenu({
     language: string
     names: Record<Locale, string>
     short: Record<Locale, string>
-    demoChip: string
-    demoBadge: string
+    demo: string
+    demoTitle: string
   }
 }) {
   const [open, setOpen] = useState(false)
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={labels.open} className="ml-auto lg:hidden">
+        <Button variant="ghost" size="icon" aria-label={labels.open} className={className}>
           <MenuIcon className="size-5" aria-hidden="true" />
         </Button>
       </SheetTrigger>
@@ -55,15 +58,17 @@ export function MobileMenu({
           <NavLinks
             items={items}
             className="flex flex-col gap-1"
-            itemClassName="h-12 w-full px-4 text-base"
+            itemClassName="h-12 w-full px-4 text-base hover:bg-secondary aria-[current=page]:bg-secondary"
             onNavigate={() => setOpen(false)}
           />
         </nav>
         <div className="flex flex-col gap-4 border-t px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          <DemoChip label={labels.demoChip} title={labels.demoBadge} className="self-start" />
           <div className="flex items-center justify-between gap-3">
-            <LocaleSwitch locale={locale} label={labels.language} names={labels.names} short={labels.short} />
-            <ThemeToggle label={labels.theme} />
+            <DemoChip label={labels.demo} title={labels.demoTitle} />
+            <div className="flex items-center gap-2.5">
+              <LocaleSwitch locale={locale} label={labels.language} names={labels.names} short={labels.short} />
+              <ThemeToggle label={labels.theme} className="size-11" />
+            </div>
           </div>
           <HeaderAction
             appHref={appHref}

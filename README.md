@@ -23,6 +23,8 @@ pnpm lint
 pnpm typecheck
 pnpm build && pnpm start      # production build on port 3141
 pnpm screenshots              # Playwright screenshots of every page and flow (needs pnpm start running)
+node scripts/wordcount.mjs    # visible words per page (needs pnpm start running)
+node scripts/dictcount.mjs    # words of UI copy in the EN/FR dictionaries
 ```
 
 No environment variables are needed. `NEXT_PUBLIC_SITE_URL` optionally overrides the canonical URL (default `https://coopdao.monark.io`).
@@ -65,8 +67,9 @@ src/
   lib/demo/              Simulated chain, wallet and data layer
 docs/
   site-plan.md           Product brief, flows, copy, aesthetics, pricing: what shipped
+  simplification.md      The restraint pass: before/after word counts, what was cut or moved
   assets.md              Every image with its license and credit
-  screenshots/           Playwright screenshots (390 px and 1440 px, light and dark, EN + FR)
+  screenshots/           Playwright screenshots (390 px and 1440 px, light and dark, EN + FR; before/ keeps two pre-simplification shots)
 ```
 
 ## Deploy to Vercel

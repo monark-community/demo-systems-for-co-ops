@@ -1,4 +1,4 @@
-import { ArrowRightIcon, BoxesIcon } from "lucide-react"
+import { ArrowRightIcon, BoxesIcon, PlusIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -44,8 +44,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
   return (
     <div className="flex flex-col">
       <header className="mx-auto w-full max-w-6xl px-4 pt-12 pb-10 sm:px-6 lg:pt-16">
-        <p className="eyebrow text-primary-ink">{h.eyebrow}</p>
-        <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-display sm:text-5xl">{h.title}</h1>
+        <h1 className="max-w-3xl text-4xl font-extrabold tracking-display sm:text-5xl">{h.title}</h1>
         <p className="mt-4 max-w-[68ch] text-lg text-muted-foreground">{h.intro}</p>
       </header>
 
@@ -111,26 +110,30 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
             {h.dev.title}
           </h2>
           <p className="mt-3 max-w-[68ch] text-muted-foreground">{h.dev.body}</p>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {h.dev.modules.map((m) => (
-              <li key={m.name} className="rounded-2xl border bg-card p-5">
-                <p className="font-mono text-sm font-bold">{m.name}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{m.body}</p>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 rounded-2xl border border-dashed bg-card px-4 py-3 font-mono text-xs text-muted-foreground sm:text-sm">{h.dev.code}</p>
+          {/* Context on demand: the contract modules sit behind a disclosure. */}
+          <details className="group mt-6">
+            <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full border bg-card px-4 text-sm font-bold [&::-webkit-details-marker]:hidden">
+              <PlusIcon className="size-4 text-primary transition-transform duration-200 group-open:rotate-45" aria-hidden="true" />
+              {h.dev.more}
+            </summary>
+            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {h.dev.modules.map((m) => (
+                <li key={m.name} className="rounded-2xl border bg-card p-5">
+                  <p className="font-mono text-sm font-bold">{m.name}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{m.body}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 rounded-2xl border border-dashed bg-card px-4 py-3 font-mono text-xs text-muted-foreground sm:text-sm">{h.dev.code}</p>
+          </details>
         </div>
       </section>
 
       <section aria-labelledby="how-cta" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex flex-col items-start gap-6 rounded-3xl border bg-card p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 id="how-cta" className="text-2xl font-bold tracking-display sm:text-3xl">
-              {h.cta.title}
-            </h2>
-            <p className="mt-2 text-muted-foreground">{h.cta.body}</p>
-          </div>
+          <h2 id="how-cta" className="text-2xl font-bold tracking-display sm:text-3xl">
+            {h.cta.title}
+          </h2>
           <Button asChild size="lg" className="shrink-0">
             <Link href={href(locale, "/app")}>
               {h.cta.button}

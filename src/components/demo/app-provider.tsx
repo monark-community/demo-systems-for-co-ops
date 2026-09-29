@@ -16,7 +16,6 @@ export interface AppCopy {
   app: Dictionary["app"]
   seed: Dictionary["seed"]
   disclaimer: string
-  demoBadge: string
 }
 
 const AppContext = createContext<AppCopy | null>(null)

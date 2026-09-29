@@ -17,6 +17,9 @@ import { ProposalCard } from "./proposal-card"
 
 type Filter = "all" | "open" | "toPay" | "closed"
 
+/** Proposals shown at a time (long lists are paged: brand guidelines §8, "Restraint"). */
+const PAGE = 6
+
 const match: Record<Filter, (p: Proposal) => boolean> = {
   all: () => true,
   open: isOpen,
@@ -28,6 +31,7 @@ export function ProposalList() {
   const demo = useDemo()
   const { app, locale } = useAppCopy()
   const [filter, setFilter] = useState<Filter>("all")
+  const [shown, setShown] = useState(PAGE)
   if (!demo) return null
   const L = app.proposals
   const member = membershipOf(demo).status === "member"
@@ -37,10 +41,7 @@ export function ProposalList() {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-display">{L.title}</h1>
-          <p className="mt-2 text-muted-foreground">{L.sub}</p>
-        </div>
+        <h1 className="text-4xl font-extrabold tracking-display">{L.title}</h1>
         {member ? (
           <Button asChild size="lg" className="shrink-0">
             <Link href={href(locale, "/app/proposals/new")}>
@@ -59,7 +60,10 @@ export function ProposalList() {
               key={f}
               type="button"
               aria-pressed={filter === f}
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setFilter(f)
+                setShown(PAGE)
+              }}
               className={cn(
                 "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-bold transition-colors duration-150",
                 filter === f ? "border-foreground bg-foreground text-background" : "border-input hover:bg-muted"
@@ -82,11 +86,18 @@ export function ProposalList() {
           ) : null}
         </div>
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
-          {list.map((p) => (
-            <ProposalCard key={p.id} p={p} demo={demo} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-3 md:grid-cols-2">
+            {list.slice(0, shown).map((p) => (
+              <ProposalCard key={p.id} p={p} demo={demo} />
+            ))}
+          </div>
+          {list.length > shown ? (
+            <Button variant="outline" className="self-center" onClick={() => setShown((n) => n + PAGE)}>
+              {L.more}
+            </Button>
+          ) : null}
+        </>
       )}
     </div>
   )

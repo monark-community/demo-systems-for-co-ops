@@ -3,9 +3,9 @@
 import { ArrowLeftIcon, FastForwardIcon, Loader2Icon, UserPlusIcon } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { TokenAmount } from "@/components/ui/token-amount"
 import { TxStatus } from "@/components/ui/tx-status"
 import { Wallet } from "@/components/ui/wallet"
@@ -14,14 +14,13 @@ import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
 import { castVote, executeProposal, fastForward, scheduleProposalSignatures } from "@/lib/demo/ops"
 import { available, isExecutable, stewards, tally } from "@/lib/demo/rules"
-import { getDemo, useDemo } from "@/lib/demo/store"
+import { useDemo } from "@/lib/demo/store"
 import type { Choice, Proposal } from "@/lib/demo/types"
 import { formatDate, formatDateTime, formatPercent, formatRelative, formatToken } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 import { ActivityFeed } from "./activity-feed"
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { charterValue, dotsFor, memberName, routeRule, StatusBadge, statusText, youIndex } from "./labels"
 import { GridLegend, MemberGrid } from "./member-grid"
 import { membershipOf } from "./membership"
@@ -108,10 +107,14 @@ export function ProposalView({ id }: { id: string }) {
             <h2 id="route-title" className="eyebrow text-muted-foreground">
               {P.routeTitle}
             </h2>
-            <p className="mt-2 text-lg font-bold">
-              {app.routes[p.route]} <span className="text-sm font-semibold text-primary-ink">· {routeRule(p.route, c, app, locale)}</span>
+            <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-lg font-bold">
+              <span>
+                {app.routes[p.route]} <span className="text-sm font-semibold text-primary-ink">· {routeRule(p.route, c, app, locale)}</span>
+              </span>
+              <InfoTip label={`${app.info}: ${P.routeTitle}`} className="-my-1">
+                {why}
+              </InfoTip>
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">{why}</p>
             {p.change ? (
               <p className="mt-3 inline-flex flex-wrap items-center gap-2 rounded-xl bg-secondary px-3 py-2 text-sm">
                 <span className="font-semibold">{app.charter.rules[p.change.key].name}</span>
@@ -336,10 +339,8 @@ function VoteBox({ p }: { p: Proposal }) {
             { label: S.voteChoice, value: app.choices[selected] },
           ],
         },
-        (hash) => {
-          castVote(p.id, selected, hash)
-          toast.success(app.toasts.voteRecorded)
-        }
+        // No toast: the grid, the tally and "Vote recorded" below already confirm it.
+        (hash) => castVote(p.id, selected, hash)
       )
       .then((ok) => ok && setChoice(null))
   }
@@ -398,6 +399,7 @@ function VoteBox({ p }: { p: Proposal }) {
   )
 }
 
+/** Demo shortcut: the other members' votes arrive, then the charter decides (the outcome line says the result, no toast). */
 function ForwardControl({ p }: { p: Proposal }) {
   const { app } = useAppCopy()
   const [running, setRunning] = useState(false)
@@ -410,25 +412,19 @@ function ForwardControl({ p }: { p: Proposal }) {
         disabled={running}
         onClick={() => {
           setRunning(true)
-          void fastForward(p.id).then(() => {
-            setRunning(false)
-            const s = getDemo()
-            const q = s?.proposals.find((x) => x.id === p.id)
-            if (q) toast(t(app.toasts.closed, { status: statusText(q, app).toLowerCase() }))
-          })
+          void fastForward(p.id).then(() => setRunning(false))
         }}
       >
         {running ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : <FastForwardIcon aria-hidden="true" />}
         {running ? F.running : F.button}
       </Button>
-      <p className="mt-2 text-xs text-muted-foreground">{F.hint}</p>
     </div>
   )
 }
 
 function ExecuteBox({ p }: { p: Proposal }) {
   const demo = useDemo()
-  const { app, locale, disclaimer } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const tx = useTx()
   if (!demo) return null
   const E = app.proposal.execute
@@ -448,19 +444,19 @@ function ExecuteBox({ p }: { p: Proposal }) {
         ],
         movesValue: true,
       },
-      (hash) => {
-        executeProposal(p.id, hash)
-        toast.success(t(app.toasts.executed, { amount: formatToken(p.amount ?? 0, locale), name: p.recipient?.name ?? "" }))
-      }
+      // No toast: the panel switches to "Paid on …" with the transaction.
+      (hash) => executeProposal(p.id, hash)
     )
 
   return (
     <section aria-labelledby="exec-title" className="rounded-2xl border-2 border-primary bg-card p-5">
-      <h2 id="exec-title" className="text-lg font-bold">
+      <h2 id="exec-title" className="flex items-center gap-1 text-lg font-bold">
         {E.title}
+        <InfoTip label={`${app.info}: ${E.title}`} className="-my-1.5">
+          {E.ready}
+        </InfoTip>
       </h2>
-      <p className="mt-2 text-sm text-muted-foreground">{E.ready}</p>
-      <p className="mt-3 font-mono text-2xl font-bold tabular-nums">{formatToken(p.amount ?? 0, locale)}</p>
+      <p className="mt-2 font-mono text-2xl font-bold tabular-nums">{formatToken(p.amount ?? 0, locale)}</p>
       {!member ? <p className="mt-3 text-sm text-muted-foreground">{E.memberOnly}</p> : null}
       {!enough ? (
         <p role="alert" className="mt-3 text-sm text-destructive">
@@ -471,7 +467,6 @@ function ExecuteBox({ p }: { p: Proposal }) {
         {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
         {E.button}
       </Button>
-      <Disclaimer text={disclaimer} className="mt-3" />
       <TxFeedback state={tx.state} pendingLabel={E.pending} confirmedLabel={E.confirmed} onRetry={run} onDismiss={tx.reset} className="mt-4" />
     </section>
   )

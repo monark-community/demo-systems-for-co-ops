@@ -6,6 +6,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { Wallet } from "@/components/ui/wallet"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -19,10 +20,14 @@ import { useAppCopy } from "./app-provider"
 
 type Filter = "all" | "in" | "out"
 
+/** Ledger rows shown at a time; the CSV export always has them all. */
+const PAGE = 8
+
 export function TreasuryView() {
   const demo = useDemo()
   const { app, locale } = useAppCopy()
   const [filter, setFilter] = useState<Filter>("all")
+  const [shown, setShown] = useState(PAGE)
   if (!demo) return null
   const T = app.treasury
 
@@ -57,10 +62,10 @@ export function TreasuryView() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="text-4xl font-extrabold tracking-display">{T.title}</h1>
-        <p className="mt-2 max-w-[68ch] text-muted-foreground">{T.sub}</p>
-      </header>
+      <h1 className="flex items-center gap-1.5 text-4xl font-extrabold tracking-display">
+        {T.title}
+        <InfoTip label={`${app.info}: ${T.title}`}>{T.sub}</InfoTip>
+      </h1>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <dl className="grid gap-3 sm:grid-cols-3">
@@ -88,12 +93,9 @@ export function TreasuryView() {
 
       <section aria-labelledby="ledger-title" className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 id="ledger-title" className="text-xl font-bold">
-              {T.ledger}
-            </h2>
-            <p className="text-sm text-muted-foreground">{T.runningNote}</p>
-          </div>
+          <h2 id="ledger-title" className="text-xl font-bold">
+            {T.ledger}
+          </h2>
           <div className="flex flex-wrap items-center gap-2">
             <div role="group" aria-label={T.filters.label} className="flex gap-1 rounded-full border p-1">
               {(["all", "in", "out"] as const).map((f) => (
@@ -101,7 +103,10 @@ export function TreasuryView() {
                   key={f}
                   type="button"
                   aria-pressed={filter === f}
-                  onClick={() => setFilter(f)}
+                  onClick={() => {
+                    setFilter(f)
+                    setShown(PAGE)
+                  }}
                   className={cn(
                     "h-8 rounded-full px-3 text-xs font-bold transition-colors duration-150",
                     filter === f ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
@@ -133,12 +138,12 @@ export function TreasuryView() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((e) => {
+                {rows.slice(0, shown).map((e) => {
                   const n = proposalNumber(e.proposalId)
                   const Icon = e.direction === "in" ? ArrowDownLeftIcon : ArrowUpRightIcon
                   return (
                     <tr key={e.id} className="grid grid-cols-[1fr_auto] gap-x-3 border-b px-4 py-3 last:border-b-0 md:table-row md:px-0 md:py-0">
-                      <td className="order-2 col-span-2 text-xs text-muted-foreground md:table-cell md:px-4 md:py-3 md:text-sm">
+                      <td className="order-2 col-span-2 text-xs text-muted-foreground md:table-cell md:px-4 md:py-3 md:text-sm" title={e.hash}>
                         {formatDate(e.at, locale)}
                       </td>
                       <td className="order-1 min-w-0 md:table-cell md:px-4 md:py-3">
@@ -164,7 +169,7 @@ export function TreasuryView() {
                         {e.direction === "in" ? "+" : "−"}
                         {formatAmount(e.amount, locale)}
                       </td>
-                      <td className="order-3 col-span-2 font-mono text-xs text-muted-foreground md:table-cell md:px-4 md:py-3" title={e.hash}>
+                      <td className="hidden font-mono text-xs text-muted-foreground md:table-cell md:px-4 md:py-3" title={e.hash}>
                         {shortHash(e.hash)}
                       </td>
                     </tr>
@@ -174,6 +179,11 @@ export function TreasuryView() {
             </table>
           </div>
         )}
+        {rows.length > shown ? (
+          <Button variant="outline" className="self-center" onClick={() => setShown((n) => n + PAGE)}>
+            {T.more}
+          </Button>
+        ) : null}
       </section>
     </div>
   )

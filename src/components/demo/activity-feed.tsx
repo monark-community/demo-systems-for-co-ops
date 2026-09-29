@@ -17,7 +17,7 @@ import Link from "next/link"
 
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
-import { formatRelative, formatToken, shortHash } from "@/lib/format"
+import { formatRelative, formatToken } from "@/lib/format"
 import type { Activity, DemoState } from "@/lib/demo/types"
 
 import { useAppCopy } from "./app-provider"
@@ -77,13 +77,11 @@ export function ActivityFeed({ demo, limit = 8, proposalId }: { demo: DemoState;
               ) : (
                 <span>{text(it)}</span>
               )}
-              <p className="mt-0.5 flex flex-wrap gap-x-2 text-xs text-muted-foreground">
-                <time dateTime={it.at}>{formatRelative(it.at, locale)}</time>
-                {it.hash ? (
-                  <span className="font-mono" title={it.hash}>
-                    {shortHash(it.hash)}
-                  </span>
-                ) : null}
+              {/* The transaction hash is secondary: it sits in the time's tooltip. */}
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                <time dateTime={it.at} title={it.hash ? `${app.proposal.tx} ${it.hash}` : undefined}>
+                  {formatRelative(it.at, locale)}
+                </time>
               </p>
             </div>
           </li>

@@ -19,7 +19,7 @@ export function membershipOf(s: DemoState) {
   return { status, me, application }
 }
 
-/** Where the visitor stands in the co-op, always visible in the app strip. */
+/** Where the visitor stands in the co-op, shown under the overview title. */
 export function MembershipChip() {
   const demo = useDemo()
   const { app, locale } = useAppCopy()
