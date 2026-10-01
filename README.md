@@ -1,73 +1,81 @@
-# Welcome to your Lovable project
+# CoopDAO by Monark
 
-## Project info
+**Run your co-op in the open.** CoopDAO keeps a co-op's members, shared money and decisions on one public record, and follows the charter its members wrote: one member, one vote. Small expenses go to the elected committee (two of three signatures), larger ones to a member vote with a quorum, and charter changes need a two-thirds majority. Money only leaves the treasury by executing an approved proposal, and every payment links back to it.
 
-**URL**: https://lovable.dev/projects/29f3fef0-0607-44ad-9e44-0dc91844de9f
+This repository is the demo site: a bilingual (English / French) Next.js app with an interactive demo co-op, **Le Grenier**, a student food co-op with 34 members and a year of history. Everything is simulated in the browser; there is no real chain, wallet or backend.
 
-## How can I edit this code?
+- Project page: https://www.monark.io/en/project/systems-for-co-ops
+- Live demo: https://coopdao.monark.io
 
-There are several ways of editing your application.
+## Run it locally
 
-**Use Lovable**
+Requires Node 22 and pnpm 10.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/29f3fef0-0607-44ad-9e44-0dc91844de9f) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+pnpm install
+pnpm dev          # http://localhost:3141
 ```
 
-**Edit a file directly in GitHub**
+Other scripts:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+pnpm lint
+pnpm typecheck
+pnpm build && pnpm start      # production build on port 3141
+pnpm screenshots              # Playwright screenshots of every page and flow (needs pnpm start running)
+node scripts/wordcount.mjs    # visible words per page (needs pnpm start running)
+node scripts/dictcount.mjs    # words of UI copy in the EN/FR dictionaries
+```
 
-**Use GitHub Codespaces**
+No environment variables are needed. `NEXT_PUBLIC_SITE_URL` optionally overrides the canonical URL (default `https://coopdao.monark.io`).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## What you can do in the demo
 
-## What technologies are used for this project?
+1. **Join the co-op:** connect a demo wallet, pay the 20 tUSDC member share, and watch two stewards sign your admission.
+2. **Vote:** cast a vote on the walk-in fridge (one dot per member, quorum marker), then fast-forward to the end of the vote.
+3. **Propose a spend:** the route preview switches between committee approval and a member vote as you type the amount.
+4. **Execute a payment:** pay a passed proposal from the treasury and find it in the ledger (CSV export).
+5. **Change the charter:** propose a new committee limit, vote, and see the charter and its history update.
 
-This project is built with:
+"Demo controls" lets you slow the network, force the next transaction to fail, and reset the demo.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## How the simulation works
 
-## How can I deploy this project?
+All demo state lives in `src/lib/demo/` behind a small typed layer, so it could be swapped for wagmi/viem without touching the UI:
 
-Simply open [Lovable](https://lovable.dev/projects/29f3fef0-0607-44ad-9e44-0dc91844de9f) and click on Share -> Publish.
+| File | Role |
+|-|-|
+| `types.ts` | Domain types: members, charter, proposals, ledger, applications, activity. Amounts are integer cents of tUSDC. |
+| `rules.ts` | The charter as pure functions: `routeFor`, `tally`, `outcome`, `treasuryBalance`, `available`. |
+| `seed.ts` | Le Grenier, seeded in the visitor's language with dates relative to now. |
+| `store.ts` | External store persisted to `localStorage` (every access in try/catch) and the wallet-prompt channel. |
+| `chain.ts` | Transaction lifecycle: wallet prompt (sign or reject) → pending with a hash (1.2–2.4 s, or 3–6 s on "slow network") → confirmed or reverted. |
+| `wallet.ts` | Simulated connect/disconnect. |
+| `ops.ts` | What each confirmed transaction does (join, propose, vote, execute), plus the simulated co-signers and the fast-forwarded votes of other members. |
 
-## Can I connect a custom domain to my Lovable project?
+## Project structure
 
-Yes, you can!
+```
+src/
+  app/[locale]/          Pages: home, how-it-works, app/*, credits, pricing (unlinked), 404, OG image
+  components/demo/       The interactive app (overview, proposals, composer, treasury, members, charter)
+  components/diagrams/   Route and lifecycle diagrams (line art in code)
+  components/home/       Hero vote card
+  components/site/       Standard Monark header, footer, locale and theme switches
+  components/ui/         shadcn/ui + @monark/ui registry components (wallet, connect-wallet, token-amount, tx-status, network-badge)
+  i18n/                  Locale config and typed EN/FR dictionaries
+  lib/demo/              Simulated chain, wallet and data layer
+docs/
+  site-plan.md           Product brief, flows, copy, aesthetics, pricing: what shipped
+  simplification.md      The restraint pass: before/after word counts, what was cut or moved
+  assets.md              Every image with its license and credit
+  screenshots/           Playwright screenshots (390 px and 1440 px, light and dark, EN + FR; before/ keeps two pre-simplification shots)
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Deploy to Vercel
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Import the repository in Vercel and deploy with the framework defaults (Next.js, pnpm detected from `pnpm-lock.yaml`, Node 22 from `engines`). No `vercel.json`, no environment variables. Every page prerenders; proposals created in the browser render on demand.
+
+## License and credits
+
+Open source by the Monark community. Photos from Unsplash (see `/credits` and `docs/assets.md`).
