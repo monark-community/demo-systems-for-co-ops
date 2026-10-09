@@ -3,11 +3,16 @@
 import { ArrowLeftIcon, Loader2Icon, SparklesIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useId, useState, type ReactNode } from "react"
+import { useId, useState } from "react"
 
 import { RouteDiagram } from "@/components/diagrams/route-diagram"
 import { Button } from "@/components/ui/button"
+import { FieldError } from "@/components/ui/field-error"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem, RadioGroupItemDescription, RadioGroupItemTitle } from "@/components/ui/radio-group"
+import { Textarea } from "@/components/ui/textarea"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -17,7 +22,6 @@ import { available, routeFor } from "@/lib/demo/rules"
 import { useDemo } from "@/lib/demo/store"
 import type { Category, CharterKey } from "@/lib/demo/types"
 import { formatToken, parseAmount } from "@/lib/format"
-import { cn } from "@/lib/utils"
 
 import { useAppCopy } from "./app-provider"
 import { charterValue, routeRule } from "./labels"
@@ -180,9 +184,9 @@ export function Composer() {
   })
   const err = (name: keyof Errors) =>
     errors[name] ? (
-      <p id={`${uid}-${name}-err`} className="mt-1.5 text-sm text-destructive">
+      <FieldError id={`${uid}-${name}-err`} className="mt-1.5">
         {errors[name]}
-      </p>
+      </FieldError>
     ) : null
 
   return (
@@ -204,13 +208,22 @@ export function Composer() {
         >
           <fieldset>
             <legend className="text-sm font-bold">{C.kind.label}</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <RadioGroup
+              variant="card"
+              value={kind}
+              onValueChange={(k) => {
+                setKind(k as typeof kind)
+                setErrors({})
+              }}
+              aria-label={C.kind.label}
+              className="mt-2 sm:grid-cols-2"
+            >
               {(["spend", "charter"] as const).map((k) => (
-                <Choice key={k} name={`${uid}-kind`} checked={kind === k} onChange={() => { setKind(k); setErrors({}) }}>
-                  {C.kind[k]}
-                </Choice>
+                <RadioGroupItem key={k} value={k}>
+                  <RadioGroupItemTitle>{C.kind[k]}</RadioGroupItemTitle>
+                </RadioGroupItem>
               ))}
-            </div>
+            </RadioGroup>
           </fieldset>
 
           {kind === "spend" ? (
@@ -265,29 +278,44 @@ export function Composer() {
               </div>
               <fieldset>
                 <legend className="text-sm font-bold">{F.category}</legend>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <ToggleGroup
+                  type="single"
+                  variant="chip"
+                  value={category}
+                  onValueChange={(c) => c && setCategory(c as typeof category)}
+                  aria-label={F.category}
+                  className="mt-2"
+                >
                   {CATEGORIES.map((c) => (
-                    <Choice key={c} name={`${uid}-cat`} checked={category === c} onChange={() => setCategory(c)} pill>
+                    <ToggleGroupItem key={c} value={c}>
                       {app.categories[c]}
-                    </Choice>
+                    </ToggleGroupItem>
                   ))}
-                </div>
+                </ToggleGroup>
               </fieldset>
             </>
           ) : (
             <>
               <fieldset>
                 <legend className="text-sm font-bold">{F.rule}</legend>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <RadioGroup
+                  variant="card"
+                  value={key}
+                  onValueChange={(k) => {
+                    setKey(k as CharterKey)
+                    setValue("")
+                    setErrors({})
+                  }}
+                  aria-label={F.rule}
+                  className="mt-2 sm:grid-cols-2"
+                >
                   {KEYS.map((k) => (
-                    <Choice key={k} name={`${uid}-rule`} checked={key === k} onChange={() => { setKey(k); setValue(""); setErrors({}) }}>
-                      <span className="flex flex-col text-left leading-tight">
-                        <span>{app.charter.rules[k].name}</span>
-                        <span className="text-xs font-semibold opacity-75">{t(C.charterNow, { value: charterValue(k, demo.charter[k], app, locale) })}</span>
-                      </span>
-                    </Choice>
+                    <RadioGroupItem key={k} value={k}>
+                      <RadioGroupItemTitle>{app.charter.rules[k].name}</RadioGroupItemTitle>
+                      <RadioGroupItemDescription>{t(C.charterNow, { value: charterValue(k, demo.charter[k], app, locale) })}</RadioGroupItemDescription>
+                    </RadioGroupItem>
                   ))}
-                </div>
+                </RadioGroup>
               </fieldset>
               <div>
                 <Label htmlFor={`${uid}-value`}>{F.newValue}</Label>
@@ -309,22 +337,18 @@ export function Composer() {
 
           <div>
             <Label htmlFor={`${uid}-summary`}>{F.summary}</Label>
-            <textarea
+            <Textarea
               {...field("summary")}
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder={F.summaryPh}
               rows={4}
-              className="mt-1.5 w-full rounded-2xl border border-input bg-card px-4 py-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 aria-invalid:border-destructive md:text-sm"
+              className="mt-1.5"
             />
             {err("summary")}
           </div>
 
-          {submitted && errorCount > 0 ? (
-            <p role="alert" className="text-sm font-semibold text-destructive">
-              {E.fix}
-            </p>
-          ) : null}
+          <FieldError>{submitted && errorCount > 0 ? E.fix : null}</FieldError>
 
           <div className="flex flex-col gap-3">
             <Button type="submit" size="lg" className="w-full sm:w-auto sm:self-end" disabled={tx.busy}>
@@ -363,28 +387,5 @@ export function Composer() {
         </aside>
       </div>
     </div>
-  )
-}
-
-function Label({ htmlFor, children }: { htmlFor: string; children: ReactNode }) {
-  return (
-    <label htmlFor={htmlFor} className="text-sm font-bold">
-      {children}
-    </label>
-  )
-}
-
-function Choice({ name, checked, onChange, children, pill }: { name: string; checked: boolean; onChange: () => void; children: ReactNode; pill?: boolean }) {
-  return (
-    <label
-      className={cn(
-        "flex min-h-11 cursor-pointer items-center border px-4 py-2 text-sm font-bold transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring",
-        pill ? "rounded-full" : "rounded-2xl",
-        checked ? "border-foreground bg-foreground text-background" : "border-input bg-card hover:bg-muted"
-      )}
-    >
-      <input type="radio" name={name} checked={checked} onChange={onChange} className="sr-only" />
-      {children}
-    </label>
   )
 }

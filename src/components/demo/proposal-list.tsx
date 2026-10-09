@@ -5,11 +5,12 @@ import Link from "next/link"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { href } from "@/i18n/config"
 import { isExecutable, isOpen } from "@/lib/demo/rules"
 import { useDemo } from "@/lib/demo/store"
 import type { Proposal } from "@/lib/demo/types"
-import { cn } from "@/lib/utils"
 
 import { useAppCopy } from "./app-provider"
 import { membershipOf } from "./membership"
@@ -52,39 +53,38 @@ export function ProposalList() {
         ) : null}
       </header>
 
-      <div role="group" aria-label={L.filters.label} className="no-scrollbar flex gap-2 overflow-x-auto">
-        {filters.map((f) => {
-          const count = demo.proposals.filter(match[f]).length
-          return (
-            <button
-              key={f}
-              type="button"
-              aria-pressed={filter === f}
-              onClick={() => {
-                setFilter(f)
-                setShown(PAGE)
-              }}
-              className={cn(
-                "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-bold transition-colors duration-150",
-                filter === f ? "border-foreground bg-foreground text-background" : "border-input hover:bg-muted"
-              )}
-            >
-              {L.filters[f]}
-              <span className={cn("text-xs", filter === f ? "text-background/80" : "text-muted-foreground")}>{count}</span>
-            </button>
-          )
-        })}
-      </div>
+      <ToggleGroup
+        type="single"
+        variant="chip"
+        size="sm"
+        value={filter}
+        onValueChange={(f) => {
+          if (!f) return
+          setFilter(f as typeof filter)
+          setShown(PAGE)
+        }}
+        aria-label={L.filters.label}
+        className="no-scrollbar w-full flex-nowrap overflow-x-auto"
+      >
+        {filters.map((f) => (
+          <ToggleGroupItem key={f} value={f}>
+            {L.filters[f]}
+            <span className="text-xs text-muted-foreground">{demo.proposals.filter(match[f]).length}</span>
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
 
       {list.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed p-10 text-center">
-          <p className="text-muted-foreground">{L.empty}</p>
+        <Empty size="lg" className="text-base">
+          <EmptyDescription>{L.empty}</EmptyDescription>
           {member ? (
-            <Button asChild variant="outline">
-              <Link href={href(locale, "/app/proposals/new")}>{L.emptyCta}</Link>
-            </Button>
+            <EmptyContent>
+              <Button asChild variant="outline">
+                <Link href={href(locale, "/app/proposals/new")}>{L.emptyCta}</Link>
+              </Button>
+            </EmptyContent>
           ) : null}
-        </div>
+        </Empty>
       ) : (
         <>
           <div className="grid gap-3 md:grid-cols-2">
