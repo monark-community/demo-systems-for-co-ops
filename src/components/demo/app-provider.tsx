@@ -1,8 +1,7 @@
 "use client"
 
-import { useTheme } from "next-themes"
 import { createContext, useContext, useEffect, type ReactNode } from "react"
-import { Toaster } from "sonner"
+import { Toaster } from "@/components/ui/sonner"
 
 import type { Dictionary } from "@/i18n"
 import type { Locale } from "@/i18n/config"
@@ -27,7 +26,6 @@ export function useAppCopy(): AppCopy {
 }
 
 export function AppProvider({ value, children }: { value: AppCopy; children: ReactNode }) {
-  const { resolvedTheme } = useTheme()
   useEffect(() => {
     initDemo(value.seed, value.locale)
     // Resume simulated committee signatures interrupted by a reload.
@@ -41,7 +39,6 @@ export function AppProvider({ value, children }: { value: AppCopy; children: Rea
       {children}
       <WalletPrompt />
       <Toaster
-        theme={resolvedTheme === "dark" ? "dark" : "light"}
         // Top-right, just under the sticky 64px header : the pages keep that
         // corner clear (titles are left-aligned), whereas bottom-center sat on
         // top of the split fan and its last recipient rows while a payment
@@ -50,12 +47,6 @@ export function AppProvider({ value, children }: { value: AppCopy; children: Rea
         position="top-right"
         offset={{ top: 176, right: 24 }}
         mobileOffset={{ top: 72, left: 16, right: 16 }}
-        toastOptions={{
-          classNames: {
-            toast: "!rounded-2xl !border !border-border !bg-popover !text-popover-foreground !font-sans !shadow-md",
-            description: "!text-muted-foreground",
-          },
-        }}
       />
     </AppContext.Provider>
   )

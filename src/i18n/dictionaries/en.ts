@@ -243,6 +243,7 @@ const en = {
     tx: {
       signing: "Waiting for your confirmation in the wallet…",
       pending: "Waiting for the network…",
+      pendingStatus: "Pending",
       confirmed: "Confirmed",
       failed: "Failed",
       rejected: "You declined the request. Nothing was sent.",

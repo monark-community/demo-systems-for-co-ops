@@ -6,14 +6,17 @@ import { usePathname } from "next/navigation"
 import { useEffect, useRef, type ReactNode } from "react"
 import { toast } from "sonner"
 
+import { AppLoading } from "@/components/ui/app-loading"
+import { AppTabs, type AppTab } from "@/components/ui/app-tabs"
 import { Button } from "@/components/ui/button"
+import { DemoControls } from "@/components/ui/demo-controls"
+import { FieldError } from "@/components/ui/field-error"
 import { href } from "@/i18n/config"
-import { useDemo, useStorageOk } from "@/lib/demo/store"
+import { resetDemo, setSettings, useDemo, useStorageOk } from "@/lib/demo/store"
 import { connectWallet } from "@/lib/demo/wallet"
 import { cn } from "@/lib/utils"
 
 import { useAppCopy } from "./app-provider"
-import { DemoControls } from "./demo-controls"
 import { MemberGrid } from "./member-grid"
 import { membershipOf } from "./membership"
 
@@ -26,27 +29,45 @@ import { membershipOf } from "./membership"
 export function AppFrame({ children }: { children: ReactNode }) {
   const demo = useDemo()
   const storageOk = useStorageOk()
-  const { app } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const connected = demo?.wallet.status === "connected"
+  const pathname = usePathname() ?? ""
+  const base = href(locale, "/app")
+  const sections: AppTab[] = [
+    {
+      href: base,
+      exact: true,
+      // Phones: Overview is a house icon, so the five sections fit on one bar.
+      label: (
+        <>
+          <HouseIcon className="size-4 sm:hidden" aria-hidden="true" />
+          <span className="sr-only sm:not-sr-only">{app.nav.overview}</span>
+        </>
+      ),
+    },
+    { href: `${base}/proposals`, label: app.nav.proposals },
+    { href: `${base}/treasury`, label: app.nav.treasury },
+    { href: `${base}/members`, label: app.nav.members },
+    { href: `${base}/charter`, label: app.nav.charter },
+  ]
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="border-b bg-secondary/40">
-        <div className="mx-auto flex min-h-13 max-w-6xl items-center gap-2 px-4 sm:px-6">
-          {connected ? <SubNav /> : <div className="flex-1" />}
-          <div className="shrink-0">
-            <DemoControls />
-          </div>
-        </div>
-        <WelcomeWatcher />
-      </div>
+      <AppTabs
+        tabs={connected ? sections : []}
+        pathname={pathname}
+        LinkComponent={Link}
+        label={app.nav.label}
+        actions={demo ? <Controls /> : null}
+      />
+      <WelcomeWatcher />
       {!storageOk ? (
         <p role="alert" className="mx-auto mt-4 w-full max-w-6xl px-4 text-sm font-semibold text-warning sm:px-6">
           {app.storageOff}
         </p>
       ) : null}
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 sm:px-6 lg:py-10">
-        {!demo ? <AppLoading label={app.loading} /> : !connected ? <ConnectGate /> : children}
+        {!demo ? <AppLoading label={app.loading} panels={1} /> : !connected ? <ConnectGate /> : children}
       </div>
     </div>
   )
@@ -67,57 +88,37 @@ function WelcomeWatcher() {
   return null
 }
 
-function SubNav() {
-  const { app, locale } = useAppCopy()
-  const pathname = usePathname() ?? ""
-  const base = href(locale, "/app")
-  const items = [
-    { href: base, label: app.nav.overview, exact: true, icon: true },
-    { href: `${base}/proposals`, label: app.nav.proposals },
-    { href: `${base}/treasury`, label: app.nav.treasury },
-    { href: `${base}/members`, label: app.nav.members },
-    { href: `${base}/charter`, label: app.nav.charter },
-  ]
+/** The app bar's one demo element: network speed, forced failure and "Reset demo". */
+function Controls() {
+  const demo = useDemo()
+  const { app, seed, locale } = useAppCopy()
+  const c = app.controls
+  if (!demo) return null
   return (
-    <nav aria-label={app.nav.label} className="min-w-0 flex-1">
-      <ul className="no-scrollbar -mx-1 flex min-w-0 items-center gap-0 overflow-x-auto px-1 py-2 sm:gap-1">
-        {items.map((it) => {
-          const active = it.exact ? pathname === it.href : pathname === it.href || pathname.startsWith(`${it.href}/`)
-          return (
-            <li key={it.href} className="shrink-0">
-              <Link
-                href={it.href}
-                aria-current={active ? "page" : undefined}
-                title={it.icon ? it.label : undefined}
-                className={cn(
-                  "inline-flex h-9 items-center rounded-full px-1.5 text-[13px] font-semibold transition-colors duration-150 sm:px-3.5 sm:text-sm",
-                  active ? "bg-card text-foreground ring-1 ring-border" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {/* Phones: Overview is a house icon, so the five sections fit on one bar. */}
-                {it.icon ? <HouseIcon className="size-4 sm:hidden" aria-hidden="true" /> : null}
-                <span className={it.icon ? "sr-only sm:not-sr-only" : undefined}>{it.label}</span>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-    </nav>
-  )
-}
-
-export function AppLoading({ label }: { label: string }) {
-  return (
-    <div role="status" aria-live="polite" className="flex flex-col gap-4">
-      <span className="sr-only">{label}</span>
-      <div className="h-9 w-56 animate-pulse rounded-full bg-muted" />
-      <div className="grid gap-3 sm:grid-cols-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />
-        ))}
-      </div>
-      <div className="h-40 animate-pulse rounded-2xl bg-muted" />
-    </div>
+    <DemoControls
+      networkName={app.network}
+      slow={demo.settings.slow}
+      onSlowChange={(v) => setSettings({ slow: v })}
+      failNext={demo.settings.failNext}
+      onFailNextChange={(v) => setSettings({ failNext: v })}
+      onReset={() => {
+        resetDemo(seed, locale)
+        toast.success(c.resetDone)
+      }}
+      title={c.title}
+      openLabel={c.open}
+      slowLabel={c.slow}
+      slowHint={c.slowHint}
+      failNextLabel={c.failNext}
+      failNextHint={c.failNextHint}
+      resetLabel={c.reset}
+      resetHint={c.resetHint}
+      resetConfirmTitle={c.resetConfirm}
+      resetConfirmBody={c.resetConfirmBody}
+      resetConfirmLabel={c.resetDo}
+      cancelLabel={c.cancel}
+      closeLabel={app.close}
+    />
   )
 }
 
@@ -153,12 +154,7 @@ function ConnectGate() {
           {connecting ? app.wallet.connecting : g.connect}
         </Button>
         <div aria-live="polite" className="mt-4 min-h-6">
-          {rejected ? (
-            <p role="alert" className="flex items-start gap-2 text-sm text-destructive">
-              <XCircleIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-              {g.rejected}
-            </p>
-          ) : null}
+          <FieldError icon={<XCircleIcon />}>{rejected ? g.rejected : null}</FieldError>
         </div>
       </div>
       <div aria-hidden="true" className="hidden rounded-3xl border bg-card p-8 lg:block">
