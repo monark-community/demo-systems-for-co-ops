@@ -1,4 +1,4 @@
-import { ArrowRightIcon, PlusIcon } from "lucide-react"
+import { ArrowRightIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
@@ -6,8 +6,10 @@ import { notFound } from "next/navigation"
 
 import { RouteDiagram } from "@/components/diagrams/route-diagram"
 import { HeroVoteCard } from "@/components/home/hero-vote-card"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
+import { SectionHeading } from "@/components/ui/section-heading"
 import { href, isLocale } from "@/i18n/config"
 import { getDictionary } from "@/i18n"
 import { pageMetadata } from "@/lib/metadata"
@@ -74,14 +76,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       {/* Three routes, one charter */}
       <section aria-labelledby="routes-title" className="bg-secondary/60">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <h2 id="routes-title" className="max-w-2xl text-3xl font-bold tracking-display sm:text-[2.25rem]">
-            {h.routes.title}
-          </h2>
+          <SectionHeading titleId="routes-title" title={h.routes.title} className="max-w-2xl" />
           <RouteDiagram
             active="vote"
             ariaLabel={h.routes.diagramLabel}
@@ -94,9 +94,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* Who */}
       <section aria-labelledby="who-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-        <h2 id="who-title" className="max-w-2xl text-3xl font-bold tracking-display sm:text-[2.25rem]">
-          {h.who.title}
-        </h2>
+        <SectionHeading titleId="who-title" title={h.who.title} className="max-w-2xl" />
         <ul className="mt-10 grid gap-5 md:grid-cols-3">
           {h.who.items.map((item, i) => (
             <li key={item.title} className="flex flex-col overflow-hidden rounded-3xl border bg-card">
@@ -118,20 +116,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* FAQ */}
       <section aria-labelledby="faq-title" className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_2fr] lg:py-24">
-        <h2 id="faq-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-          {h.faq.title}
-        </h2>
-        <div className="divide-y border-y">
+        <SectionHeading titleId="faq-title" title={h.faq.title} />
+        <Accordion type="multiple" variant="plus" className="border-y">
           {h.faq.items.map((item) => (
-            <details key={item.q} className="group py-1">
-              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-lg py-3 text-lg font-bold [&::-webkit-details-marker]:hidden">
-                {item.q}
-                <PlusIcon className="size-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-45" aria-hidden="true" />
-              </summary>
-              <p className="max-w-[68ch] pb-5 text-muted-foreground">{item.a}</p>
-            </details>
+            <AccordionItem key={item.q} value={item.q} className="py-1">
+              <AccordionTrigger>{item.q}</AccordionTrigger>
+              <AccordionContent>{item.a}</AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </section>
 
       {/* Closing */}

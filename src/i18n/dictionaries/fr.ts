@@ -244,6 +244,7 @@ const fr: Dictionary = {
     tx: {
       signing: "En attente de votre confirmation dans le portefeuille…",
       pending: "En attente du réseau…",
+      pendingStatus: "En attente",
       confirmed: "Confirmée",
       failed: "Échec",
       rejected: "Vous avez refusé la demande. Rien n'a été envoyé.",

@@ -5,6 +5,12 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  // components/ui is installed from the @monark/ui registry and kept identical
+  // to it; SiteHeader closes its sheet on navigation with a setState in an effect.
+  {
+    files: ["src/components/ui/site-header.tsx"],
+    rules: { "react-hooks/set-state-in-effect": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

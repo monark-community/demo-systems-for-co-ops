@@ -6,7 +6,10 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyDescription } from "@/components/ui/empty"
 import { InfoTip } from "@/components/ui/info-tip"
+import { Stat, StatGroup, StatLabel, StatValue } from "@/components/ui/stat"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Wallet } from "@/components/ui/wallet"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -68,17 +71,17 @@ export function TreasuryView() {
       </h1>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <dl className="grid gap-3 sm:grid-cols-3">
+        <StatGroup className="sm:grid-cols-3 lg:grid-cols-3">
           {stats.map((s) => (
-            <div key={s.label} className={cn("rounded-2xl border bg-card p-4", s.strong && "border-2 border-primary")}>
-              <dt className="text-xs font-semibold text-muted-foreground">{s.label}</dt>
-              <dd className="mt-1 flex items-baseline gap-1.5">
-                <span className="font-mono text-2xl font-bold tabular-nums tracking-tight">{formatAmount(s.value, locale)}</span>
-                <span className="text-xs text-muted-foreground">tUSDC</span>
-              </dd>
-            </div>
+            <Stat key={s.label} className={cn(s.strong && "border-2 border-primary")}>
+              <StatLabel>{s.label}</StatLabel>
+              <StatValue className="items-baseline gap-x-1.5 gap-y-0">
+                {formatAmount(s.value, locale)}
+                <span className="text-xs font-normal tracking-normal text-muted-foreground">tUSDC</span>
+              </StatValue>
+            </Stat>
           ))}
-        </dl>
+        </StatGroup>
         <div className="flex flex-col gap-3 rounded-2xl border bg-card p-4">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold text-muted-foreground">{T.address}</span>
@@ -97,25 +100,24 @@ export function TreasuryView() {
             {T.ledger}
           </h2>
           <div className="flex flex-wrap items-center gap-2">
-            <div role="group" aria-label={T.filters.label} className="flex gap-1 rounded-full border p-1">
+            <ToggleGroup
+              type="single"
+              variant="pill"
+              size="sm"
+              value={filter}
+              onValueChange={(f) => {
+                if (!f) return
+                setFilter(f as Filter)
+                setShown(PAGE)
+              }}
+              aria-label={T.filters.label}
+            >
               {(["all", "in", "out"] as const).map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  aria-pressed={filter === f}
-                  onClick={() => {
-                    setFilter(f)
-                    setShown(PAGE)
-                  }}
-                  className={cn(
-                    "h-8 rounded-full px-3 text-xs font-bold transition-colors duration-150",
-                    filter === f ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
+                <ToggleGroupItem key={f} value={f}>
                   {T.filters[f]}
-                </button>
+                </ToggleGroupItem>
               ))}
-            </div>
+            </ToggleGroup>
             <Button variant="outline" size="sm" onClick={exportCsv}>
               <DownloadIcon aria-hidden="true" />
               {T.export}
@@ -124,7 +126,9 @@ export function TreasuryView() {
         </div>
 
         {rows.length === 0 ? (
-          <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">{T.empty}</p>
+          <Empty role="status">
+            <EmptyDescription>{T.empty}</EmptyDescription>
+          </Empty>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
             <table className="w-full text-sm">

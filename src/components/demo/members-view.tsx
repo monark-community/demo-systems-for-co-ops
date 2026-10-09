@@ -5,7 +5,11 @@ import Link from "next/link"
 import { useId, useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyDescription } from "@/components/ui/empty"
+import { FieldError } from "@/components/ui/field-error"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { WalletAddress, WalletAvatar } from "@/components/ui/wallet"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -98,7 +102,9 @@ export function MembersView() {
           </div>
         </div>
         {list.length === 0 ? (
-          <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">{t(M.noMatch, { q })}</p>
+          <Empty role="status">
+            <EmptyDescription>{t(M.noMatch, { q })}</EmptyDescription>
+          </Empty>
         ) : (
           <>
             <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -265,9 +271,7 @@ function JoinPanel() {
         }}
       >
         <div>
-          <label htmlFor={`${uid}-name`} className="text-sm font-bold">
-            {J.name}
-          </label>
+          <Label htmlFor={`${uid}-name`}>{J.name}</Label>
           <Input
             id={`${uid}-name`}
             value={displayName}
@@ -278,16 +282,14 @@ function JoinPanel() {
           />
         </div>
         <div>
-          <label htmlFor={`${uid}-note`} className="text-sm font-bold">
-            {J.note}
-          </label>
-          <textarea
+          <Label htmlFor={`${uid}-note`}>{J.note}</Label>
+          <Textarea
             id={`${uid}-note`}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder={J.notePh}
             rows={2}
-            className="mt-1.5 w-full rounded-2xl border border-input bg-card px-4 py-2.5 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 md:text-sm"
+            className="mt-1.5 min-h-0"
           />
         </div>
         <dl className="divide-y rounded-xl border text-sm">
@@ -303,11 +305,7 @@ function JoinPanel() {
             <dd className="font-mono">{formatToken(demo.wallet.balance, locale)}</dd>
           </div>
         </dl>
-        {error ? (
-          <p role="alert" className="text-sm text-destructive">
-            {error}
-          </p>
-        ) : null}
+        <FieldError>{error}</FieldError>
         <Button type="submit" size="lg" disabled={tx.busy}>
           {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
           {tx.busy ? J.pending : J.submit}

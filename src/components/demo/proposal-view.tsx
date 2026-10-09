@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { FieldError } from "@/components/ui/field-error"
 import { InfoTip } from "@/components/ui/info-tip"
 import { TokenAmount } from "@/components/ui/token-amount"
 import { TxStatus } from "@/components/ui/tx-status"
@@ -78,7 +79,7 @@ export function ProposalView({ id }: { id: string }) {
             <div>
               <dt className="text-xs text-muted-foreground">{P.amount}</dt>
               <dd className="mt-0.5 text-lg font-bold">
-                <TokenAmount value={p.amount} decimals={2} fractionDigits={2} symbol="tUSDC" locale={locale === "fr" ? "fr-CA" : "en-CA"} />
+                <TokenAmount mono value={p.amount} decimals={2} fractionDigits={2} symbol="tUSDC" locale={locale === "fr" ? "fr-CA" : "en-CA"} />
               </dd>
             </div>
           ) : null}
@@ -384,11 +385,7 @@ function VoteBox({ p }: { p: Proposal }) {
           ))}
         </div>
       </fieldset>
-      {error ? (
-        <p role="alert" className="mt-2 text-sm text-destructive">
-          {V.pickFirst}
-        </p>
-      ) : null}
+      <FieldError className="mt-2">{error ? V.pickFirst : null}</FieldError>
       <Button className="mt-4 w-full" size="lg" onClick={submit} disabled={tx.busy || (!!mine && (choice === null || choice === mine))}>
         {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
         {mine ? V.change : V.cast}
@@ -458,11 +455,7 @@ function ExecuteBox({ p }: { p: Proposal }) {
       </h2>
       <p className="mt-2 font-mono text-2xl font-bold tabular-nums">{formatToken(p.amount ?? 0, locale)}</p>
       {!member ? <p className="mt-3 text-sm text-muted-foreground">{E.memberOnly}</p> : null}
-      {!enough ? (
-        <p role="alert" className="mt-3 text-sm text-destructive">
-          {E.notEnough}
-        </p>
-      ) : null}
+      <FieldError className="mt-3">{!enough ? E.notEnough : null}</FieldError>
       <Button className="mt-4 w-full" size="lg" onClick={run} disabled={!member || !enough || tx.busy || tx.state.phase === "confirmed"}>
         {tx.busy ? <Loader2Icon className="animate-spin" aria-hidden="true" /> : null}
         {E.button}

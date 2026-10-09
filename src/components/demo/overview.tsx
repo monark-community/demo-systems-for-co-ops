@@ -4,7 +4,9 @@ import { ArrowRightIcon, PlusIcon, UserPlusIcon } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyDescription } from "@/components/ui/empty"
 import { InfoTip } from "@/components/ui/info-tip"
+import { Stat, StatGroup, StatHint, StatLabel, StatValue } from "@/components/ui/stat"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { available, isExecutable, isOpen, treasuryBalance } from "@/lib/demo/rules"
@@ -62,25 +64,21 @@ export function Overview() {
         ) : null}
       </header>
 
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <StatGroup className="grid-cols-2">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-2xl border bg-card p-4">
-            <dt className="flex h-5 items-center gap-0.5 text-xs font-semibold text-muted-foreground">
+          <Stat key={s.label}>
+            <StatLabel>
               {s.label}
-              {s.info ? (
-                <InfoTip label={`${app.info}: ${s.label}`} className="-my-1.5 size-8">
-                  {s.info}
-                </InfoTip>
-              ) : null}
-            </dt>
-            <dd className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-              <span className="font-mono text-xl font-bold tabular-nums tracking-tight sm:text-2xl">{s.value}</span>
-              {s.unit ? <span className="text-xs text-muted-foreground">{s.unit}</span> : null}
-            </dd>
-            {s.hint ? <dd className="mt-1 text-xs text-muted-foreground">{s.hint}</dd> : null}
-          </div>
+              {s.info ? <InfoTip label={`${app.info}: ${s.label}`}>{s.info}</InfoTip> : null}
+            </StatLabel>
+            <StatValue className="items-baseline gap-x-1.5 gap-y-0">
+              {s.value}
+              {s.unit ? <span className="text-xs font-normal tracking-normal text-muted-foreground">{s.unit}</span> : null}
+            </StatValue>
+            {s.hint ? <StatHint>{s.hint}</StatHint> : null}
+          </Stat>
         ))}
-      </dl>
+      </StatGroup>
 
       <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
         <section aria-labelledby="open-title" className="flex flex-col gap-4">
@@ -94,7 +92,9 @@ export function Overview() {
             </Link>
           </div>
           {open.length === 0 ? (
-            <p className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">{app.proposals.empty}</p>
+            <Empty size="sm">
+              <EmptyDescription>{app.proposals.empty}</EmptyDescription>
+            </Empty>
           ) : (
             <div className="flex flex-col gap-3">
               {open.map((p) => (
