@@ -4,11 +4,59 @@ import { notFound } from "next/navigation"
 
 import "../globals.css"
 
-import { SiteFooter } from "@/components/site/footer"
-import { SiteHeader } from "@/components/site/header"
-import { ThemeProvider } from "@/components/site/theme"
-import { isLocale, locales, SITE_URL } from "@/i18n/config"
-import { getDictionary } from "@/i18n"
+import Link from "next/link"
+
+import { Header, type HeaderCopy } from "@/components/site/header"
+import { MONARK_SOCIALS, SiteFooter } from "@/components/ui/site-footer"
+import { ThemeProvider } from "@/components/ui/theme-toggle"
+import { href, isLocale, locales, PROJECT_ID, REPO_URL, SITE_URL, type Locale } from "@/i18n/config"
+import { getDictionary, type Dictionary } from "@/i18n"
+
+function headerCopy(dict: Dictionary): HeaderCopy {
+  const c = dict.common
+  const s = dict.app.summaries
+  return {
+    product: c.product,
+    homeLabel: c.homeLabel,
+    nav: { overview: c.nav.overview, how: c.nav.how, demo: c.nav.demo, label: c.nav.label },
+    launchDemo: c.launchDemo,
+    menu: c.menu,
+    menuTitle: c.menuTitle,
+    closeMenu: c.closeMenu,
+    theme: c.theme.toggle,
+    language: { label: c.language.label, names: { en: c.language.en, fr: c.language.fr }, short: c.language.short },
+    demoChip: c.demoChip,
+    demoBadge: c.demoBadge,
+    wallet: { ...dict.app.wallet, signIn: s.signIn, signInRow: s.signInRow, signInValue: s.signInValue },
+  }
+}
+
+function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+  const c = dict.common
+  const f = c.footer
+  return (
+    <SiteFooter
+      product={c.product}
+      description={f.product}
+      LinkComponent={Link}
+      links={[
+        { href: href(locale), label: c.nav.overview },
+        { href: href(locale, "/how-it-works"), label: c.nav.how },
+        { href: href(locale, "/app"), label: c.nav.demo },
+        { href: href(locale, "/credits"), label: c.nav.credits },
+      ]}
+      resources={[
+        { href: `https://www.monark.io/${locale}/project/${PROJECT_ID}`, label: f.projectPage },
+        { href: REPO_URL, label: f.repo },
+      ]}
+      socials={MONARK_SOCIALS.map((s) => ({ ...s, label: f.social[s.key as keyof typeof f.social] }))}
+      copyright={`© ${new Date().getFullYear()} ${f.legal}`}
+      demoNotice={c.demoBadge}
+      legalLinks={[{ href: href(locale, "/credits"), label: f.photos }]}
+      labels={{ productNav: f.productNav, builtBy: f.builtBy, monarkHome: f.monarkHome, tagline: f.tagline, socials: f.socialLabel }}
+    />
+  )
+}
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -66,11 +114,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           >
             {dict.common.skip}
           </a>
-          <SiteHeader locale={locale} dict={dict} />
+          <Header locale={locale} copy={headerCopy(dict)} />
           <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
             {children}
           </main>
-          <SiteFooter locale={locale} dict={dict} />
+          <Footer locale={locale} dict={dict} />
         </ThemeProvider>
       </body>
     </html>

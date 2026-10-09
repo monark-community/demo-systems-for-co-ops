@@ -6,7 +6,7 @@ import { notFound } from "next/navigation"
 import { GridLegend, MemberGrid, type DotKind } from "@/components/demo/member-grid"
 import { Seals } from "@/components/demo/seals"
 import { LifecycleDiagram } from "@/components/diagrams/lifecycle-diagram"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Button } from "@/components/ui/button"
 import { href, isLocale } from "@/i18n/config"
 import { getDictionary } from "@/i18n"
@@ -59,7 +59,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
         </div>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-16 sm:px-6 lg:py-20">
         {h.sections.map((s) => (

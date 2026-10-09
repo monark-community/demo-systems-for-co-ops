@@ -6,7 +6,7 @@ import { notFound } from "next/navigation"
 
 import { RouteDiagram } from "@/components/diagrams/route-diagram"
 import { HeroVoteCard } from "@/components/home/hero-vote-card"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Button } from "@/components/ui/button"
 import { href, isLocale } from "@/i18n/config"
 import { getDictionary } from "@/i18n"
@@ -74,7 +74,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       {/* Three routes, one charter */}
       <section aria-labelledby="routes-title" className="bg-secondary/60">
