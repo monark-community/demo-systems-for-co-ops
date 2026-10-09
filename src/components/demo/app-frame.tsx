@@ -59,6 +59,8 @@ export function AppFrame({ children }: { children: ReactNode }) {
         LinkComponent={Link}
         label={app.nav.label}
         actions={demo ? <Controls /> : null}
+        // Phones: tighter tabs so all five sections fit next to the controls.
+        className="max-sm:[&_[data-slot=app-tab]]:px-1.5 max-sm:[&_[data-slot=app-tab]]:text-[13px]"
       />
       <WelcomeWatcher />
       {!storageOk ? (
