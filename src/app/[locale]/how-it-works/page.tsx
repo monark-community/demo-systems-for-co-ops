@@ -1,4 +1,4 @@
-import { ArrowRightIcon, BoxesIcon, PlusIcon } from "lucide-react"
+import { ArrowRightIcon, BoxesIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -8,6 +8,7 @@ import { Seals } from "@/components/demo/seals"
 import { LifecycleDiagram } from "@/components/diagrams/lifecycle-diagram"
 import { SectionDivider } from "@/components/ui/section-divider"
 import { Button } from "@/components/ui/button"
+import { Disclosure } from "@/components/ui/disclosure"
 import { href, isLocale } from "@/i18n/config"
 import { getDictionary } from "@/i18n"
 import { formatPercent } from "@/lib/format"
@@ -111,12 +112,8 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
           </h2>
           <p className="mt-3 max-w-[68ch] text-muted-foreground">{h.dev.body}</p>
           {/* Context on demand: the contract modules sit behind a disclosure. */}
-          <details className="group mt-6">
-            <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full border bg-card px-4 text-sm font-bold [&::-webkit-details-marker]:hidden">
-              <PlusIcon className="size-4 text-primary transition-transform duration-200 group-open:rotate-45" aria-hidden="true" />
-              {h.dev.more}
-            </summary>
-            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Disclosure variant="pill" summary={h.dev.more} className="mt-6" contentClassName="pt-6 text-base">
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {h.dev.modules.map((m) => (
                 <li key={m.name} className="rounded-2xl border bg-card p-5">
                   <p className="font-mono text-sm font-bold">{m.name}</p>
@@ -125,7 +122,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
               ))}
             </ul>
             <p className="mt-6 rounded-2xl border border-dashed bg-card px-4 py-3 font-mono text-xs text-muted-foreground sm:text-sm">{h.dev.code}</p>
-          </details>
+          </Disclosure>
         </div>
       </section>
 
