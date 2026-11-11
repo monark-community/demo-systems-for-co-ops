@@ -9,7 +9,7 @@ This repository is the demo site: a bilingual (English / French) Next.js app wit
 
 ## Run it locally
 
-Requires Node 22 and pnpm 10.
+Requires Node 22.23.4 or newer on the 22 line and pnpm 10.
 
 ```bash
 pnpm install
@@ -74,7 +74,7 @@ docs/
 
 ## Deploy to Vercel
 
-Import the repository in Vercel and deploy with the framework defaults (Next.js, pnpm detected from `pnpm-lock.yaml`, Node 22 from `engines`). No `vercel.json`, no environment variables. Every page prerenders; proposals created in the browser render on demand.
+Import the repository in Vercel and deploy with the framework defaults (Next.js, pnpm detected from `pnpm-lock.yaml`, Node 22 from `engines`). No `vercel.json`, no environment variables. `pnpm build` and `pnpm start` stop on a Node release exposed to CVE-2026-111497. Every page prerenders; proposals created in the browser render on demand.
 
 ## License and credits
 

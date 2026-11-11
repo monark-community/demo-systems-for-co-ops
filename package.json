@@ -5,7 +5,9 @@
   "description": "CoopDAO by Monark: run your co-op in the open, one member one vote, with a treasury that follows the charter (simulated testnet demo).",
   "scripts": {
     "dev": "next dev --port 3141",
+    "prebuild": "node scripts/check-node.mjs",
     "build": "next build",
+    "prestart": "node scripts/check-node.mjs",
     "start": "next start --port 3141",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
